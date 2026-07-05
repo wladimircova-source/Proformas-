@@ -152,7 +152,7 @@
 
         // Credenciales oficiales de tu Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyC_1qzfNPRuU8Fz4quhWIFVfIZGggI7r9A",
+            apiKey: "AIzaSyAQzf3CgCaWqa0Fq3NjEEQXxb4znkPnqXI",
             authDomain: "operaciones-e645f.firebaseapp.com",
             projectId: "operaciones-e645f",
             storageBucket: "operaciones-e645f.firebasestorage.app",
