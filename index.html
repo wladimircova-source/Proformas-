@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -79,4 +79,318 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-400 mb-1">RIF / Identificación</label>
-                        <input type="text" id="rif_doc" placeholder="Ej: J-1
+                        <input type="text" id="rif_doc" placeholder="Ej: J-12345678-9" class="w-full input-field rounded p-2 text-sm uppercase">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">Artículos / Servicios</label>
+                    <div id="contenedor-filas" class="space-y-2">
+                        </div>
+                    <button type="button" id="btn-add-fila" class="mt-2 text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer">
+                        + Añadir fila
+                    </button>
+                </div>
+
+                <div class="pt-4 border-t border-gray-800 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-bold text-gray-400 block">Equivalencia en Bolívares:</span>
+                        <span id="total-bs-view" class="text-base font-mono font-bold text-amber-500">Bs. 0,00</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-bold text-gray-400">Total USD:</span>
+                        <span id="total-global-view" class="text-2xl font-black text-white ml-2">$ 0.00</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" id="btn-cancelar" class="w-1/4 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2 rounded text-xs hidden">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded text-sm tracking-wide uppercase">GENERAR DOCUMENTO</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card p-6 rounded-xl shadow-lg">
+            <h2 class="text-md font-bold text-white mb-4">Historial de Emitidos</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs whitespace-nowrap">
+                    <thead>
+                        <tr>
+                            <th class="p-3">Numeración</th>
+                            <th class="p-3">Tipo</th>
+                            <th class="p-3">Cliente / O.C.</th>
+                            <th class="p-3 text-right">Monto Total</th>
+                            <th class="p-3 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-documentos">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="print-area" class="hidden print-view max-w-4xl mx-auto p-6 bg-white text-black text-xs">
+        <div class="flex justify-between items-start border-b-2 border-gray-300 pb-4 mb-4">
+            <div>
+                <h1 class="text-2xl font-black text-gray-900" id="p-empresa-emisora">EMPRESA</h1>
+                <p class="text-[10px] text-gray-500 font-mono">Control Comercial de Operaciones de Cambios (BCV)</p>
+                <div class="mt-3 border border-gray-300 p-2 rounded bg-gray-50 max-w-md">
+                    <p class="font-bold text-gray-800 uppercase text-[9px]">CLIENTE / EMPRESA COMPRADORA:</p>
+                    <p id="p-cliente-nombre" class="font-mono font-bold text-black text-xs"></p>
+                    <p id="p-cliente-rif"></p>
+                </div>
+            </div>
+            <div class="text-right">
+                <div id="p-badge-tipo" class="bg-black text-white px-2 py-0.5 font-black text-[10px] rounded mb-1 inline-block">PRESUPUESTO</div>
+                <p class="text-sm font-mono font-bold text-red-600" id="p-numero-doc">PRE-0000</p>
+                <p class="text-[10px] font-bold text-gray-700" id="p-orden-compra">O.C: --</p>
+                <p class="text-[9px] text-gray-500" id="p-fecha-emision">Fecha: --/--/----</p>
+                <div class="mt-2 border border-amber-300 bg-amber-50 p-1 text-[9px] font-mono rounded inline-block">
+                    <p class="text-black font-black" id="p-tasa-bcv-view">1 USD = 0,00 Bs. (BCV)</p>
+                </div>
+            </div>
+        </div>
+
+        <table class="w-full text-left text-xs mb-4 border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100 font-bold border-b border-gray-300">
+                    <th class="p-2 text-black w-12 text-center border-r border-gray-300">CANT.</th>
+                    <th class="p-2 text-black border-r border-gray-300">DESCRIPCIÓN DE LA PARTIDA</th>
+                    <th class="p-2 text-black w-24 text-right">TOTAL ($)</th>
+                </tr>
+            </thead>
+            <tbody id="p-tabla-items">
+            </tbody>
+        </table>
+
+        <div class="mt-4 pt-3 border-t border-gray-300 flex justify-between items-start">
+            <div class="max-w-md">
+                <p class="text-[9px] text-gray-600 font-serif italic bg-gray-50 p-1.5 border rounded border-gray-200" id="p-leyenda-cambiaria"></p>
+            </div>
+            <div class="text-right space-y-0.5">
+                <p class="text-xs font-bold text-gray-900" id="p-total-usd">TOTAL DIVISAS: $ 0.00</p>
+                <p class="text-sm font-black text-emerald-700" id="p-total-bs">TOTAL EN BS: Bs. 0,00</p>
+            </div>
+        </div>
+        <div class="mt-12 w-40 text-center border-t border-black pt-1 text-[9px] font-bold">Atentamente,<br>Wladimir Cova</div>
+    </div>
+
+    <script>
+        // Declaramos todo bajo un objeto para evitar que falle el scope
+        let listaDocumentos = JSON.parse(localStorage.getItem('documentos_cova_local')) || [];
+        let totalCalculadoUSD = 0;
+
+        function agregarFilaArticulo(cant = '', desc = '', precio = '') {
+            const contenedor = document.getElementById('contenedor-filas');
+            const div = document.createElement('div');
+            div.className = "flex gap-2 items-center fila-articulo";
+            
+            div.innerHTML = `
+                <input type="number" placeholder="Cant" value="${cant}" required class="w-16 input-field rounded p-1.5 text-xs text-center font-mono item-cant">
+                <input type="text" placeholder="Descripción" value="${desc}" required class="flex-1 input-field rounded p-1.5 text-xs uppercase item-desc">
+                <input type="number" step="0.01" placeholder="Precio $" value="${precio}" required class="w-24 input-field rounded p-1.5 text-xs text-right font-mono item-precio">
+                <button type="button" class="btn-remove-row text-red-500 hover:text-red-400 font-bold px-2 text-sm cursor-pointer">✕</button>
+            `;
+            
+            // Enlazar eventos de forma segura por JavaScript
+            div.querySelector('.item-cant').addEventListener('input', calcularTotalGlobal);
+            div.querySelector('.item-precio').addEventListener('input', calcularTotalGlobal);
+            div.querySelector('.btn-remove-row').addEventListener('click', function() {
+                div.remove();
+                calcularTotalGlobal();
+            });
+
+            contenedor.appendChild(div);
+            calcularTotalGlobal();
+        }
+
+        function calcularTotalGlobal() {
+            let total = 0;
+            const filas = document.querySelectorAll('.fila-articulo');
+            filas.forEach(f => {
+                const c = parseFloat(f.querySelector('.item-cant').value) || 0;
+                const p = parseFloat(f.querySelector('.item-precio').value) || 0;
+                total += (c * p);
+            });
+
+            totalCalculadoUSD = total;
+            document.getElementById('total-global-view').innerText = `$ ${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+
+            const tasa = parseFloat(document.getElementById('tasa_bcv').value) || 1;
+            const totalBs = total * tasa;
+            document.getElementById('total-bs-view').innerText = `Bs. ${totalBs.toLocaleString('es-VE', {minimumFractionDigits: 2})}`;
+        }
+
+        // Configuración de los botones de la interfaz principal
+        document.getElementById('btn-add-fila').addEventListener('click', () => agregarFilaArticulo());
+        document.getElementById('tasa_bcv').addEventListener('input', calcularTotalGlobal);
+
+        document.getElementById('doc-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit_id').value;
+            const tipo = document.getElementById('tipo_doc').value;
+            const tasa = parseFloat(document.getElementById('tasa_bcv').value) || 1;
+
+            const items = [];
+            document.querySelectorAll('.fila-articulo').forEach(f => {
+                items.push({
+                    cant: parseFloat(f.querySelector('.item-cant').value) || 0,
+                    descripcion: f.querySelector('.item-desc').value.toUpperCase(),
+                    precio: parseFloat(f.querySelector('.item-precio').value) || 0
+                });
+            });
+
+            const dataObj = {
+                tipo: tipo,
+                tasaBcv: tasa,
+                ordenCompra: document.getElementById('orden_compra').value.toUpperCase() || 'N/A',
+                moneda: document.getElementById('tipo_moneda').value.toUpperCase(),
+                empresaEmisora: document.getElementById('empresa_emisora').value,
+                cliente: document.getElementById('cliente_doc').value.toUpperCase(),
+                rif: document.getElementById('rif_doc').value.toUpperCase() || 'N/A',
+                items: items,
+                total: totalCalculadoUSD,
+                totalBs: totalCalculadoUSD * tasa
+            };
+
+            if (editId) {
+                const index = listaDocumentos.findIndex(d => d.id === editId);
+                if (index !== -1) {
+                    dataObj.id = editId;
+                    dataObj.numeroDocumento = listaDocumentos[index].numeroDocumento;
+                    dataObj.fecha = listaDocumentos[index].fecha;
+                    listaDocumentos[index] = dataObj;
+                }
+                cancelarEdicion();
+            } else {
+                const totalDeEsteTipo = listaDocumentos.filter(d => d.tipo === tipo).length;
+                const prefijo = tipo === "PRESUPUESTO" ? "PRE" : "PROF";
+                
+                dataObj.id = 'ID-' + Date.now();
+                dataObj.numeroDocumento = `${prefijo}-${(totalDeEsteTipo + 1).toString().padStart(4, '0')}`;
+                dataObj.fecha = new Date().toLocaleDateString('es-ES');
+                listaDocumentos.unshift(dataObj);
+            }
+
+            localStorage.setItem('documentos_cova_local', JSON.stringify(listaDocumentos));
+            
+            this.reset();
+            document.getElementById('contenedor-filas').innerHTML = "";
+            document.getElementById('tipo_moneda').value = "DOLAR USD";
+            document.getElementById('tasa_bcv').value = "1.00";
+            agregarFilaArticulo();
+            renderTablaDocs();
+        });
+
+        function renderTablaDocs() {
+            const tbody = document.getElementById('tabla-documentos');
+            tbody.innerHTML = "";
+
+            listaDocumentos.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-800/50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 font-mono font-bold text-blue-400">${d.numeroDocumento}</td>
+                    <td class="p-3 font-bold text-gray-400 text-[10px]">${d.tipo}</td>
+                    <td class="p-3 font-semibold text-white">${d.cliente} <br><span class="text-gray-500 font-mono text-[10px]">O.C: ${d.ordenCompra}</span></td>
+                    <td class="p-3 text-right text-emerald-400 font-bold">$ ${(d.total || 0).toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+                    <td class="p-3 text-center flex justify-center gap-1">
+                        <button data-id="${d.id}" class="btn-print bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded font-bold text-xs cursor-pointer">🖨️ Ver</button>
+                        <button data-id="${d.id}" class="btn-edit bg-amber-600 hover:bg-amber-500 text-white px-2 py-1 rounded text-xs cursor-pointer">✏️</button>
+                        <button data-id="${d.id}" class="btn-delete bg-red-700 hover:bg-red-600 text-white px-2 py-1 rounded text-xs cursor-pointer">🗑️</button>
+                    </td>
+                `;
+
+                // Agregar los controladores de eventos seguros a los botones de la tabla
+                tr.querySelector('.btn-print').addEventListener('click', () => abrirVisorImpresion(d.id));
+                tr.querySelector('.btn-edit').addEventListener('click', () => cargarFormEdicion(d.id));
+                tr.querySelector('.btn-delete').addEventListener('click', () => borrarRegistro(d.id));
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function cargarFormEdicion(id) {
+            const d = listaDocumentos.find(doc => doc.id === id);
+            if(!d) return;
+
+            document.getElementById('edit_id').value = d.id;
+            document.getElementById('tipo_doc').value = d.tipo;
+            document.getElementById('tasa_bcv').value = d.tasaBcv || '1.00';
+            document.getElementById('orden_compra').value = d.ordenCompra || '';
+            document.getElementById('tipo_moneda').value = d.moneda || 'DOLAR USD';
+            document.getElementById('empresa_emisora').value = d.empresaEmisora;
+            document.getElementById('cliente_doc').value = d.cliente;
+            document.getElementById('rif_doc').value = d.rif;
+
+            document.getElementById('contenedor-filas').innerHTML = "";
+            if(d.items && d.items.length > 0) {
+                d.items.forEach(it => agregarFilaArticulo(it.cant, it.descripcion, it.precio));
+            } else {
+                agregarFilaArticulo();
+            }
+
+            document.getElementById('form-titulo').innerText = `✏️ Editando: ${d.numeroDocumento}`;
+            document.getElementById('btn-cancelar').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function borrarRegistro(id) {
+            if(confirm("⚠️ ¿Deseas eliminar permanentemente este registro?")) {
+                listaDocumentos = listaDocumentos.filter(d => d.id !== id);
+                localStorage.setItem('documentos_cova_local', JSON.stringify(listaDocumentos));
+                renderTablaDocs();
+            }
+        }
+
+        function cancelarEdicion() {
+            document.getElementById('edit_id').value = "";
+            document.getElementById('doc-form').reset();
+            document.getElementById('contenedor-filas').innerHTML = "";
+            document.getElementById('form-titulo').innerText = "Nuevo Documento";
+            document.getElementById('btn-cancelar').classList.add('hidden');
+            document.getElementById('tasa_bcv').value = "1.00";
+            agregarFilaArticulo();
+        }
+        document.getElementById('btn-cancelar').addEventListener('click', cancelarEdicion);
+
+        function abrirVisorImpresion(id) {
+            const d = listaDocumentos.find(doc => doc.id === id);
+            if(!d) return;
+
+            document.getElementById('p-empresa-emisora').innerText = d.empresaEmisora;
+            document.getElementById('p-numero-doc').innerText = d.numeroDocumento;
+            document.getElementById('p-badge-tipo').innerText = d.tipo;
+            document.getElementById('p-orden-compra').innerText = `O.C: ${d.ordenCompra}`;
+            document.getElementById('p-fecha-emision').innerText = `Fecha: ${d.fecha}`;
+            document.getElementById('p-cliente-nombre').innerText = d.cliente;
+            document.getElementById('p-cliente-rif').innerHTML = `<strong>RIF / ID:</strong> ${d.rif}`;
+
+            const pTabla = document.getElementById('p-tabla-items');
+            pTabla.innerHTML = "";
+            d.items.forEach(it => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-gray-200";
+                tr.innerHTML = `
+                    <td class="p-2 text-center font-bold border-r border-gray-300">${it.cant}</td>
+                    <td class="p-2 border-r border-gray-300 font-mono text-[10px] uppercase">${it.descripcion}</td>
+                    <td class="p-2 text-right font-bold">$ ${(it.cant * it.precio).toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+                `;
+                pTabla.appendChild(tr);
+            });
+
+            document.getElementById('p-tasa-bcv-view').innerText = `1 USD = ${(d.tasaBcv || 1).toLocaleString('es-VE', {minimumFractionDigits:2})} Bs. (BCV)`;
+            document.getElementById('p-total-usd').innerText = `TOTAL DIVISAS: $ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+            document.getElementById('p-total-bs').innerText = `TOTAL EN BS: Bs. ${d.totalBs.toLocaleString('es-VE', {minimumFractionDigits:2})}`;
+            document.getElementById('p-leyenda-cambiaria').innerText = `EL MONTO TOTAL DE ESTA OPERACIÓN ES DE $ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})} USD, EQUIVALENTES A Bs. ${d.totalBs.toLocaleString('es-VE', {minimumFractionDigits:2})} PAGADEROS EN BOLÍVARES A LA TASA CAMBIARIA DEL BANCO CENTRAL DE VENEZUELA (BCV) VIGENTE A LA FECHA DE LIQUIDACIÓN EFECTIVA.`;
+
+            window.print();
+        }
+
+        // Inicializar el sistema al cargar
+        agregarFilaArticulo();
+        renderTablaDocs();
+    </script>
+</body>
+</html>
