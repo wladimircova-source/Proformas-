@@ -35,6 +35,37 @@
         }
         h2 { color: #ffffff; font-size: 16px; margin-top: 0; margin-bottom: 16px; font-weight: 700; }
         
+        /* Selector de Jurisdicción Tipo Botones */
+        .jurisdiccion-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn-juris {
+            flex: 1;
+            background-color: #21262d;
+            border: 2px solid #30363d;
+            color: #8b949e;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .btn-juris.active-ve {
+            background-color: rgba(31, 111, 235, 0.15);
+            border-color: #1f6feb;
+            color: #58a6ff;
+        }
+        .btn-juris.active-fz {
+            background-color: rgba(218, 54, 51, 0.15);
+            border-color: #da3633;
+            color: #ff7b72;
+        }
+
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
         .grid-mix { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
@@ -44,7 +75,6 @@
         label { display: block; font-size: 12px; font-weight: 700; color: #8b949e; margin-bottom: 6px; }
         .lbl-blue { color: #58a6ff; }
         .lbl-amber { color: #d29922; }
-        .lbl-red { color: #ff7b72; }
 
         .input-field {
             width: 100%;
@@ -96,4 +126,499 @@
         #print-area { display: none; background: white; color: black; padding: 20px; font-size: 12px; }
         .p-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 16px; }
         .p-client-box { border: 1px solid #ccc; padding: 8px; background-color: #f9f9f9; border-radius: 4px; margin-top: 8px; max-width: 450px; }
-        .p-badge { background
+        .p-badge { background: black; color: white; padding: 2px 6px; font-weight: bold; display: inline-block; font-size: 10px; border-radius: 3px; }
+        .p-badge-fz { background: #da3633; color: white; padding: 2px 6px; font-weight: bold; display: inline-block; font-size: 10px; border-radius: 3px; margin-left: 4px; }
+        .p-num { color: #d9383a; font-family: monospace; font-size: 14px; font-weight: bold; margin: 4px 0; }
+        .p-table { width: 100%; border: 1px solid #ccc; border-collapse: collapse; margin-top: 16px; }
+        .p-table th { background-color: #f0f0f0; color: black; border: 1px solid #ccc; padding: 6px; }
+        .p-table td { border: 1px solid #ccc; padding: 6px; color: black; }
+        .p-footer { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 12px; border-top: 1px solid #ccc; }
+        .p-leyenda { font-size: 9px; color: #555; font-style: italic; max-width: 480px; background: #fafafa; padding: 6px; border: 1px solid #eee; line-height: 1.3; }
+
+        .hidden-element { display: none !important; }
+
+        @media print {
+            #main-ui { display: none !important; }
+            body { background: white; color: black; padding: 0; }
+            #print-area { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- INTERFAZ PRINCIPAL -->
+        <div id="main-ui">
+            <div class="flex-col mb-6 gap-2 text-center">
+                <h1>📄 Generador de Presupuestos, Proformas y Notas</h1>
+                <a href="index.html" class="back-link">← Volver al Control de Órdenes</a>
+            </div>
+
+            <!-- Formulario Principal -->
+            <div class="card">
+                <h2 id="form-titulo">Nuevo Documento</h2>
+                
+                <!-- BOTONES DE JURISDICCIÓN DIRECTA -->
+                <label style="text-align: center; margin-bottom: 8px;">JURISDICCIÓN / ENTORNO COMERCIAL</label>
+                <div class="jurisdiccion-selector">
+                    <button type="button" id="btn-juris-ve" class="btn-juris active-ve">🇻🇪 Nacional (Venezuela)</button>
+                    <button type="button" id="btn-juris-fz" class="btn-juris">✈️ Free Zone (Internacional - FZ)</button>
+                </div>
+
+                <form id="doc-form">
+                    <input type="hidden" id="edit_id" value="">
+                    <!-- Input oculto para guardar el estado del botón -->
+                    <input type="hidden" id="jurisdiccion_val" value="NACIONAL">
+                    
+                    <div class="grid-2 mb-4">
+                        <div>
+                            <label>Tipo de Documento</label>
+                            <select id="tipo_doc" class="input-field">
+                                <option value="PRESUPUESTO">PRESUPUESTO (PRE)</option>
+                                <option value="PROFORMA">PROFORMA (PROF)</option>
+                                <option value="NOTA DE ENTREGA">NOTA DE ENTREGA (NE)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Empresa Emisora</label>
+                            <select id="empresa_emisora" class="input-field">
+                                <option value="SOLUCIONES INTEGRALES 360 F.P.">SOLUCIONES INTEGRALES 360 F.P.</option>
+                                <option value="SECURITY MALLORY 360 C.A.">SECURITY MALLORY 360 C.A.</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Configuración de Divisas / Tasas -->
+                    <div class="grid-3 mb-4 bg-box">
+                        <div>
+                            <label class="lbl-blue">Orden de Compra (O.C.)</label>
+                            <input type="text" id="orden_compra" placeholder="Ej: 006059/2026" class="input-field" style="text-transform: uppercase; font-family: monospace;">
+                        </div>
+                        <div id="wrapper-tasa-bcv">
+                            <label class="lbl-amber">Tasa Oficial (BCV)</label>
+                            <input type="number" step="0.01" id="tasa_bcv" value="1.00" required class="input-field text-center" style="font-weight: bold; color: #fff; font-family: monospace;">
+                        </div>
+                        <div>
+                            <label>Tipo de Moneda</label>
+                            <input type="text" id="tipo_moneda" value="DOLAR USD" class="input-field text-center" style="font-weight: bold; text-transform: uppercase;">
+                            <div class="switch-container">
+                                <input type="checkbox" id="switch_solo_divisas">
+                                <label for="switch_solo_divisas" style="margin:0; color:#ff7b72; font-size:11px; cursor:pointer;">Solo Divisas (Ocultar Bs)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-mix mb-4">
+                        <div>
+                            <label>Cliente / Empresa Compradora</label>
+                            <input type="text" id="cliente_doc" required placeholder="Ej: VISCO ORINOCO, C.A. o VISCO FZ LLC" class="input-field">
+                        </div>
+                        <div>
+                            <label>RIF o ID Registro</label>
+                            <input type="text" id="rif_doc" placeholder="Ej: J-50438419-4" class="input-field" style="text-transform: uppercase;">
+                        </div>
+                    </div>
+
+                    <!-- Artículos Dinámicos -->
+                    <div class="mb-4">
+                        <label>Artículos / Servicios</label>
+                        <div id="contenedor-filas"></div>
+                        <button type="button" id="btn-add-fila" class="btn-link">+ Añadir fila</button>
+                    </div>
+
+                    <!-- Sección de Cierre de Montos -->
+                    <div class="totals-section">
+                        <div id="ui-box-bs">
+                            <label>Equivalencia Cambiaria Estimada:</label>
+                            <span id="total-bs-view" class="total-bs">Bs. 0,00</span>
+                        </div>
+                        <div style="text-align: right; flex: 1;">
+                            <label>Total:</label>
+                            <span id="total-global-view" class="total-usd">$ 0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" id="btn-cancelar" class="btn-cancel">Cancelar</button>
+                        <button type="submit" class="btn-submit">GENERAR DOCUMENTO</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Historial Tabla -->
+            <div class="card">
+                <h2>Historial de Emitidos</h2>
+                <div class="overflow-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Numeración</th>
+                                <th>Tipo / Destino</th>
+                                <th>Cliente / O.C.</th>
+                                <th style="text-align: right;">Monto Total</th>
+                                <th style="text-align: center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-documentos"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÁREA IMPRESIÓN -->
+        <div id="print-area">
+            <div class="p-header">
+                <div>
+                    <h1 style="color: black; font-size: 22px; font-weight: 900;" id="p-empresa-emisora">EMPRESA</h1>
+                    <p style="margin:2px 0; color:#555; font-family: monospace; font-size: 10px;">Servicios y Operaciones Integrales de Redes y Suministros</p>
+                    <div class="p-client-box">
+                        <p style="margin: 0 0 4px 0; font-size: 9px; font-weight: bold; color: #444;">CLIENTE / EMPRESA COMPRADORA:</p>
+                        <p id="p-cliente-nombre" style="margin:0; font-family: monospace; font-weight: bold; font-size: 13px; text-transform: uppercase;"></p>
+                        <p id="p-cliente-rif" style="margin: 4px 0 0 0; font-family: monospace;"></p>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <span id="p-badge-tipo" class="p-badge">PRESUPUESTO</span>
+                    <span id="p-badge-fz" class="p-badge-fz hidden-element">FREE ZONE</span>
+                    <div id="p-numero-doc" class="p-num">PRE-0000</div>
+                    <p style="margin:2px 0; font-weight: bold;" id="p-orden-compra">O.C: --</p>
+                    <p style="margin:2px 0; color:#666;" id="p-fecha-emision">Fecha: --/--/----</p>
+                    <div id="p-box-tasa-bcv" style="margin-top: 6px; border: 1px solid #d29922; background: #fffdf5; padding: 4px; font-size: 10px; font-family: monospace; border-radius: 4px;">
+                        <span id="p-tasa-bcv-view" style="font-weight: bold;">1 USD = 0,00 Bs. (BCV)</span>
+                    </div>
+                </div>
+            </div>
+
+            <table class="p-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60px; text-align: center;">CANT.</th>
+                        <th style="text-align: left;">DESCRIPCIÓN DE LOS ARTÍCULOS / SERVICIOS</th>
+                        <th style="width: 120px; text-align: right;">TOTAL ($)</th>
+                    </tr>
+                </thead>
+                <tbody id="p-tabla-items"></tbody>
+            </table>
+
+            <div class="p-footer">
+                <div>
+                    <p id="p-leyenda-cambiaria" class="p-leyenda"></p>
+                </div>
+                <div style="text-align: right; min-width: 220px;">
+                    <p style="margin: 0; font-size: 13px; font-weight: bold;" id="p-total-usd">TOTAL CONTRATO: $ 0.00</p>
+                    <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 900; color: #1e7e34;" id="p-total-bs">TOTAL EN BS: Bs. 0,00</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 60px; width: 180px; text-align: center; border-top: 1px solid black; padding-top: 4px; font-weight: bold; font-size: 10px;">
+                Atentamente,<br>Wladimir Cova
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Control Seguro Local -->
+    <script>
+        let listaDocumentos = JSON.parse(localStorage.getItem('documentos_cova_local')) || [];
+        let totalCalculadoUSD = 0;
+
+        const btnJurisVe = document.getElementById('btn-juris-ve');
+        const btnJurisFz = document.getElementById('btn-juris-fz');
+        const hiddenJuris = document.getElementById('jurisdiccion_val');
+        const checkboxSoloDivisas = document.getElementById('switch_solo_divisas');
+
+        // Eventos para Botones de Control de Jurisdicción (Estilo Tabs)
+        btnJurisVe.addEventListener('click', function() {
+            cambiarEntornoJurisdiccion('NACIONAL');
+        });
+
+        btnJurisFz.addEventListener('click', function() {
+            cambiarEntornoJurisdiccion('FREE_ZONE');
+        });
+
+        function cambiarEntornoJurisdiccion(modo) {
+            hiddenJuris.value = modo;
+            if (modo === 'FREE_ZONE') {
+                btnJurisFz.classList.add('active-fz');
+                btnJurisVe.classList.remove('active-ve');
+                checkboxSoloDivisas.checked = true;
+                dispararEfectoSoloDivisas(true);
+            } else {
+                btnJurisVe.classList.add('active-ve');
+                btnJurisFz.classList.remove('active-fz');
+                checkboxSoloDivisas.checked = false;
+                dispararEfectoSoloDivisas(false);
+            }
+        }
+
+        checkboxSoloDivisas.addEventListener('change', function() {
+            dispararEfectoSoloDivisas(this.checked);
+        });
+
+        function dispararEfectoSoloDivisas(ocultar) {
+            const wrapperTasa = document.getElementById('wrapper-tasa-bcv');
+            const boxUiBs = document.getElementById('ui-box-bs');
+            const inputTasa = document.getElementById('tasa_bcv');
+            
+            if (ocultar) {
+                wrapperTasa.classList.add('hidden-element');
+                boxUiBs.classList.add('hidden-element');
+                inputTasa.required = false;
+                inputTasa.value = "0";
+            } else {
+                wrapperTasa.classList.remove('hidden-element');
+                boxUiBs.classList.remove('hidden-element');
+                inputTasa.required = true;
+                inputTasa.value = "1.00";
+            }
+            calcularTotalGlobal();
+        }
+
+        function agregarFilaArticulo(cant = '', desc = '', precio = '') {
+            const contenedor = document.getElementById('contenedor-filas');
+            const div = document.createElement('div');
+            div.className = "fila-articulo";
+            
+            div.innerHTML = `
+                <input type="number" placeholder="Cant" value="${cant}" required class="input-field w-cant item-cant">
+                <input type="text" placeholder="Descripción del artículo / servicio" value="${desc}" required class="input-field w-flex item-desc">
+                <input type="number" step="0.01" placeholder="Precio $" value="${precio}" required class="input-field w-precio item-precio">
+                <button type="button" class="btn-remove-row">✕</button>
+            `;
+            
+            div.querySelector('.item-cant').addEventListener('input', calcularTotalGlobal);
+            div.querySelector('.item-precio').addEventListener('input', calcularTotalGlobal);
+            div.querySelector('.btn-remove-row').addEventListener('click', function() {
+                div.remove();
+                calcularTotalGlobal();
+            });
+
+            contenedor.appendChild(div);
+            calcularTotalGlobal();
+        }
+
+        function calcularTotalGlobal() {
+            let total = 0;
+            const filas = document.querySelectorAll('.fila-articulo');
+            filas.forEach(f => {
+                const c = parseFloat(f.querySelector('.item-cant').value) || 0;
+                const p = parseFloat(f.querySelector('.item-precio').value) || 0;
+                total += (c * p);
+            });
+
+            totalCalculadoUSD = total;
+            document.getElementById('total-global-view').innerText = `$ ${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+
+            const tasa = parseFloat(document.getElementById('tasa_bcv').value) || 0;
+            const totalBs = total * tasa;
+            document.getElementById('total-bs-view').innerText = `Bs. ${totalBs.toLocaleString('es-VE', {minimumFractionDigits: 2})}`;
+        }
+
+        document.getElementById('btn-add-fila').addEventListener('click', () => agregarFilaArticulo());
+        document.getElementById('tasa_bcv').addEventListener('input', calcularTotalGlobal);
+
+        document.getElementById('doc-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit_id').value;
+            const tipo = document.getElementById('tipo_doc').value;
+            const juris = hiddenJuris.value;
+            const tasa = parseFloat(document.getElementById('tasa_bcv').value) || 0;
+            const soloDivisas = checkboxSoloDivisas.checked;
+
+            const items = [];
+            document.querySelectorAll('.fila-articulo').forEach(f => {
+                items.push({
+                    cant: parseFloat(f.querySelector('.item-cant').value) || 0,
+                    descripcion: f.querySelector('.item-desc').value.toUpperCase(),
+                    precio: parseFloat(f.querySelector('.item-precio').value) || 0
+                });
+            });
+
+            const dataObj = {
+                tipo: tipo,
+                jurisdiccion: juris,
+                tasaBcv: tasa,
+                soloDivisas: soloDivisas,
+                ordenCompra: document.getElementById('orden_compra').value.toUpperCase() || 'N/A',
+                moneda: document.getElementById('tipo_moneda').value.toUpperCase(),
+                empresaEmisora: document.getElementById('empresa_emisora').value,
+                cliente: document.getElementById('cliente_doc').value.toUpperCase(),
+                rif: document.getElementById('rif_doc').value.toUpperCase() || 'N/A',
+                items: items,
+                total: totalCalculadoUSD,
+                totalBs: soloDivisas ? 0 : (totalCalculadoUSD * tasa)
+            };
+
+            if (editId) {
+                const index = listaDocumentos.findIndex(d => d.id === editId);
+                if (index !== -1) {
+                    dataObj.id = editId;
+                    dataObj.numeroDocumento = listaDocumentos[index].numeroDocumento;
+                    dataObj.fecha = listaDocumentos[index].fecha;
+                    listaDocumentos[index] = dataObj;
+                }
+                cancelarEdicion();
+            } else {
+                const totalDeEsteTipo = listaDocumentos.filter(d => d.tipo === tipo).length;
+                
+                let prefijo = "PRE";
+                if (tipo === "PROFORMA") prefijo = "PROF";
+                if (tipo === "NOTA DE ENTREGA") prefijo = "NE";
+                
+                dataObj.id = 'ID-' + Date.now();
+                dataObj.numeroDocumento = `${prefijo}-${(totalDeEsteTipo + 1).toString().padStart(4, '0')}`;
+                dataObj.fecha = new Date().toLocaleDateString('es-ES');
+                listaDocumentos.unshift(dataObj);
+            }
+
+            localStorage.setItem('documentos_cova_local', JSON.stringify(listaDocumentos));
+            
+            this.reset();
+            cambiarEntornoJurisdiccion('NACIONAL');
+            document.getElementById('contenedor-filas').innerHTML = "";
+            document.getElementById('tipo_moneda').value = "DOLAR USD";
+            agregarFilaArticulo();
+            renderTablaDocs();
+        });
+
+        function renderTablaDocs() {
+            const tbody = document.getElementById('tabla-documentos');
+            tbody.innerHTML = "";
+
+            listaDocumentos.forEach(d => {
+                const tagJuris = d.jurisdiccion === 'FREE_ZONE' 
+                    ? '<span style="background-color:#da3633; color:white; padding:2px 6px; font-size:10px; border-radius:3px; font-weight:bold;">FZ</span>' 
+                    : '<span style="background-color:#1f6feb; color:white; padding:2px 6px; font-size:10px; border-radius:3px; font-weight:bold;">VE</span>';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="td-num">${d.numeroDocumento}</td>
+                    <td><div style="font-weight:bold; font-size:11px; margin-bottom:4px;">${d.tipo}</div>${tagJuris}</td>
+                    <td><strong>${d.cliente}</strong><br><span style="color:#8b949e; font-size:11px;">O.C: ${d.ordenCompra}</span></td>
+                    <td class="td-total">$ ${(d.total || 0).toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+                    <td class="actions-cell">
+                        <button data-id="${d.id}" class="btn-action btn-p">🖨️ Ver</button>
+                        <button data-id="${d.id}" class="btn-action btn-e">✏️</button>
+                        <button data-id="${d.id}" class="btn-action btn-d">🗑️</button>
+                    </td>
+                `;
+
+                tr.querySelector('.btn-p').addEventListener('click', () => abrirVisorImpresion(d.id));
+                tr.querySelector('.btn-e').addEventListener('click', () => cargarFormEdicion(d.id));
+                tr.querySelector('.btn-d').addEventListener('click', () => borrarRegistro(d.id));
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function cargarFormEdicion(id) {
+            const d = listaDocumentos.find(doc => doc.id === id);
+            if(!d) return;
+
+            document.getElementById('edit_id').value = d.id;
+            document.getElementById('tipo_doc').value = d.tipo;
+            
+            cambiarEntornoJurisdiccion(d.jurisdiccion || 'NACIONAL');
+
+            document.getElementById('orden_compra').value = d.ordenCompra || '';
+            document.getElementById('tipo_moneda').value = d.moneda || 'DOLAR USD';
+            document.getElementById('empresa_emisora').value = d.empresaEmisora;
+            document.getElementById('cliente_doc').value = d.cliente;
+            document.getElementById('rif_doc').value = d.rif;
+
+            checkboxSoloDivisas.checked = d.soloDivisas || false;
+            dispararEfectoSoloDivisas(d.soloDivisas);
+
+            if (!d.soloDivisas) {
+                document.getElementById('tasa_bcv').value = d.tasaBcv || '1.00';
+            }
+
+            document.getElementById('contenedor-filas').innerHTML = "";
+            if(d.items && d.items.length > 0) {
+                d.items.forEach(it => agregarFilaArticulo(it.cant, it.descripcion, it.precio));
+            } else {
+                agregarFilaArticulo();
+            }
+
+            document.getElementById('form-titulo').innerText = `✏️ Editando: ${d.numeroDocumento}`;
+            document.getElementById('btn-cancelar').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function borrarRegistro(id) {
+            if(confirm("⚠️ ¿Deseas eliminar permanentemente este registro?")) {
+                listaDocumentos = listaDocumentos.filter(d => d.id !== id);
+                localStorage.setItem('documentos_cova_local', JSON.stringify(listaDocumentos));
+                renderTablaDocs();
+            }
+        }
+
+        function cancelarEdicion() {
+            document.getElementById('edit_id').value = "";
+            document.getElementById('doc-form').reset();
+            cambiarEntornoJurisdiccion('NACIONAL');
+            document.getElementById('contenedor-filas').innerHTML = "";
+            document.getElementById('form-titulo').innerText = "Nuevo Documento";
+            document.getElementById('btn-cancelar').style.display = 'none';
+            agregarFilaArticulo();
+        }
+        document.getElementById('btn-cancelar').addEventListener('click', cancelarEdicion);
+
+        function abrirVisorImpresion(id) {
+            const d = listaDocumentos.find(doc => doc.id === id);
+            if(!d) return;
+
+            document.getElementById('p-empresa-emisora').innerText = d.empresaEmisora;
+            document.getElementById('p-numero-doc').innerText = d.numeroDocumento;
+            document.getElementById('p-badge-tipo').innerText = d.tipo;
+            document.getElementById('p-orden-compra').innerText = `O.C: ${d.ordenCompra}`;
+            document.getElementById('p-fecha-emision').innerText = `Fecha: ${d.fecha}`;
+            document.getElementById('p-cliente-nombre').innerText = d.cliente;
+            document.getElementById('p-cliente-rif').innerHTML = `<strong>ID / REGISTRO:</strong> ${d.rif}`;
+
+            const pTabla = document.getElementById('p-tabla-items');
+            pTabla.innerHTML = "";
+            d.items.forEach(it => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align:center; font-weight:bold;">${it.cant}</td>
+                    <td style="font-family:monospace; text-transform:uppercase;">${it.descripcion}</td>
+                    <td style="text-align:right; font-weight:bold;">$ ${(it.cant * it.precio).toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+                `;
+                pTabla.appendChild(tr);
+            });
+
+            const badgeFzPrint = document.getElementById('p-badge-fz');
+            const boxTasaPrint = document.getElementById('p-box-tasa-bcv');
+            const totalBsPrint = document.getElementById('p-total-bs');
+            const leyendaPrint = document.getElementById('p-leyenda-cambiaria');
+
+            document.getElementById('p-total-usd').innerText = `TOTAL CONTRATO: $ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+
+            if (d.jurisdiccion === 'FREE_ZONE') {
+                badgeFzPrint.classList.remove('hidden-element');
+                boxTasaPrint.classList.add('hidden-element');
+                totalBsPrint.classList.add('hidden-element');
+                leyendaPrint.innerText = `FREE ZONE TRANSACTION TERMS: THIS OPERATIONAL ACQUISITION IS ASSIGNED DIRECTLY TO INTERNATIONAL PROTOCOLS. THE CONTRACTUAL VALUE OF $ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})} USD IS SUBJECT TO EXCLUSIVE SETTLEMENT IN FOREIGN CURRENCY DIRECTLY VIA TRANS-BORDER SETTLEMENT RULES.`;
+            } else if (d.soloDivisas) {
+                badgeFzPrint.classList.add('hidden-element');
+                boxTasaPrint.classList.add('hidden-element');
+                totalBsPrint.classList.add('hidden-element');
+                leyendaPrint.innerText = `TERMINOS DE TRANSFERENCIA: EL VALOR DE ESTA ADQUISICIÓN SE ENCUENTRA SUJETO A LIQUIDACIÓN EXCLUSIVA Y DIRECTA EN DIVISAS DE ACUERDO A LOS PROTOCOLOS COMERCIALES ESTABLECIDOS ENTRE LAS PARTES.`;
+            } else {
+                badgeFzPrint.classList.add('hidden-element');
+                boxTasaPrint.classList.remove('hidden-element');
+                totalBsPrint.classList.remove('hidden-element');
+                document.getElementById('p-tasa-bcv-view').innerText = `1 USD = ${(d.tasaBcv || 1).toLocaleString('es-VE', {minimumFractionDigits:2})} Bs. (BCV)`;
+                totalBsPrint.innerText = `TOTAL EN BS: Bs. ${d.totalBs.toLocaleString('es-VE', {minimumFractionDigits:2})}`;
+                leyendaPrint.innerText = `EL MONTO TOTAL DE ESTA OPERACIÓN ES DE $ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})} USD, EQUIVALENTES A Bs. ${d.totalBs.toLocaleString('es-VE', {minimumFractionDigits:2})} PAGADEROS EN BOLÍVARES A LA TASA CAMBIARIA DEL BANCO CENTRAL DE VENEZUELA (BCV) VIGENTE A LA FECHA DE LIQUIDACIÓN EFECTIVA.`;
+            }
+
+            window.print();
+        }
+
+        // Arranque
+        agregarFilaArticulo();
+        renderTablaDocs();
+    </script>
+</body>
+</html>
