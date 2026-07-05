@@ -35,36 +35,14 @@
         }
         h2 { color: #ffffff; font-size: 16px; margin-top: 0; margin-bottom: 16px; font-weight: 700; }
         
-        /* Selector de Jurisdicción Tipo Botones */
-        .jurisdiccion-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+        .jurisdiccion-selector { display: flex; gap: 10px; margin-bottom: 20px; }
         .btn-juris {
-            flex: 1;
-            background-color: #21262d;
-            border: 2px solid #30363d;
-            color: #8b949e;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            text-transform: uppercase;
-            transition: all 0.2s ease;
-            text-align: center;
+            flex: 1; background-color: #21262d; border: 2px solid #30363d; color: #8b949e;
+            padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;
+            text-transform: uppercase; transition: all 0.2s ease; text-align: center;
         }
-        .btn-juris.active-ve {
-            background-color: rgba(31, 111, 235, 0.15);
-            border-color: #1f6feb;
-            color: #58a6ff;
-        }
-        .btn-juris.active-fz {
-            background-color: rgba(218, 54, 51, 0.15);
-            border-color: #da3633;
-            color: #ff7b72;
-        }
+        .btn-juris.active-ve { background-color: rgba(31, 111, 235, 0.15); border-color: #1f6feb; color: #58a6ff; }
+        .btn-juris.active-fz { background-color: rgba(218, 54, 51, 0.15); border-color: #da3633; color: #ff7b72; }
 
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
@@ -75,16 +53,11 @@
         label { display: block; font-size: 12px; font-weight: 700; color: #8b949e; margin-bottom: 6px; }
         .lbl-blue { color: #58a6ff; }
         .lbl-amber { color: #d29922; }
+        .lbl-green { color: #3fb950; }
 
         .input-field {
-            width: 100%;
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            color: #c9d1d9;
-            padding: 8px 12px;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 14px;
+            width: 100%; background-color: #0d1117; border: 1px solid #30363d;
+            color: #c9d1d9; padding: 8px 12px; border-radius: 6px; box-sizing: border-box; font-size: 14px;
         }
         .input-field:focus { border-color: #58a6ff; outline: none; }
         
@@ -108,19 +81,25 @@
         .btn-submit:hover { background-color: #2ea44f; }
         .btn-cancel { background-color: #21262d; border: 1px solid #30363d; color: #c9d1d9; font-weight: 700; padding: 12px; border-radius: 6px; cursor: pointer; display: none; }
 
+        /* Estados y Tags */
+        .badge-status { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .status-pendiente { background-color: rgba(210, 153, 34, 0.15); color: #d29922; border: 1px solid #d29922; }
+        .status-aceptado { background-color: rgba(63, 185, 80, 0.15); color: #3fb950; border: 1px solid #3fb950; }
+
         /* Historial */
         .overflow-table { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
         th { background-color: #161b22; color: #8b949e; padding: 12px; border-bottom: 2px solid #30363d; }
-        td { padding: 12px; border-bottom: 1px solid #21262d; color: #c9d1d9; }
+        td { padding: 12px; border-bottom: 1px solid #21262d; color: #c9d1d9; vertical-align: top; }
         .td-num { font-family: monospace; font-weight: bold; color: #58a6ff; }
         .td-total { font-family: monospace; font-weight: bold; color: #3fb950; text-align: right; }
-        .actions-cell { display: flex; gap: 6px; justify-content: center; }
+        .actions-cell { display: flex; flex-direction: column; gap: 6px; align-items: stretch; width: 140px; }
         
-        .btn-action { border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; color: white; }
+        .btn-action { border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; color: white; text-align: center; }
         .btn-p { background-color: #1f6feb; }
         .btn-e { background-color: #9e6a03; }
         .btn-d { background-color: #da3633; }
+        .btn-check { background-color: #238636; font-size: 11px; padding: 4px; }
 
         /* IMPRESIÓN */
         #print-area { display: none; background: white; color: black; padding: 20px; font-size: 12px; }
@@ -150,7 +129,7 @@
         <!-- INTERFAZ PRINCIPAL -->
         <div id="main-ui">
             <div class="flex-col mb-6 gap-2 text-center">
-                <h1>📄 Generador de Presupuestos, Proformas y Notas</h1>
+                <h1>📄 Control Comercial y Trazabilidad de Documentos</h1>
                 <a href="index.html" class="back-link">← Volver al Control de Órdenes</a>
             </div>
 
@@ -158,19 +137,17 @@
             <div class="card">
                 <h2 id="form-titulo">Nuevo Documento</h2>
                 
-                <!-- BOTONES DE JURISDICCIÓN DIRECTA -->
                 <label style="text-align: center; margin-bottom: 8px;">JURISDICCIÓN / ENTORNO COMERCIAL</label>
                 <div class="jurisdiccion-selector">
-                    <button type="button" id="btn-juris-ve" class="btn-juris active-ve">🇻🇪 Nacional (Venezuela)</button>
+                    <button type="button" id="btn-juris-ve" class="btn-juris active-ve">🇲🇪 Nacional (Venezuela)</button>
                     <button type="button" id="btn-juris-fz" class="btn-juris">✈️ Free Zone (Internacional - FZ)</button>
                 </div>
 
                 <form id="doc-form">
                     <input type="hidden" id="edit_id" value="">
-                    <!-- Input oculto para guardar el estado del botón -->
                     <input type="hidden" id="jurisdiccion_val" value="NACIONAL">
                     
-                    <div class="grid-2 mb-4">
+                    <div class="grid-3 mb-4">
                         <div>
                             <label>Tipo de Documento</label>
                             <select id="tipo_doc" class="input-field">
@@ -178,6 +155,10 @@
                                 <option value="PROFORMA">PROFORMA (PROF)</option>
                                 <option value="NOTA DE ENTREGA">NOTA DE ENTREGA (NE)</option>
                             </select>
+                        </div>
+                        <div id="wrapper-documento-origen">
+                            <label class="lbl-blue" id="lbl-doc-origen">Enlazado a Presupuesto</label>
+                            <input type="text" id="doc_origen_ref" placeholder="Ej: PRE-0001" class="input-field" style="text-transform: uppercase; font-family: monospace;">
                         </div>
                         <div>
                             <label>Empresa Emisora</label>
@@ -188,35 +169,41 @@
                         </div>
                     </div>
 
-                    <!-- Configuración de Divisas / Tasas -->
+                    <!-- Configuración de Divisas / Tasas / Anticipos -->
                     <div class="grid-3 mb-4 bg-box">
                         <div>
-                            <label class="lbl-blue">Orden de Compra (O.C.)</label>
+                            <label class="lbl-blue">Código O.C. (Visco)</label>
                             <input type="text" id="orden_compra" placeholder="Ej: 006059/2026" class="input-field" style="text-transform: uppercase; font-family: monospace;">
                         </div>
                         <div id="wrapper-tasa-bcv">
                             <label class="lbl-amber">Tasa Oficial (BCV)</label>
                             <input type="number" step="0.01" id="tasa_bcv" value="1.00" required class="input-field text-center" style="font-weight: bold; color: #fff; font-family: monospace;">
                         </div>
-                        <div>
-                            <label>Tipo de Moneda</label>
-                            <input type="text" id="tipo_moneda" value="DOLAR USD" class="input-field text-center" style="font-weight: bold; text-transform: uppercase;">
-                            <div class="switch-container">
-                                <input type="checkbox" id="switch_solo_divisas">
-                                <label for="switch_solo_divisas" style="margin:0; color:#ff7b72; font-size:11px; cursor:pointer;">Solo Divisas (Ocultar Bs)</label>
-                            </div>
+                        <div id="wrapper-anticipo">
+                            <label class="lbl-green">Condición de Pago / Anticipo</label>
+                            <select id="porcentaje_anticipo" class="input-field" style="color: #3fb950; font-weight: bold;">
+                                <option value="100">Pago 100% Total</option>
+                                <option value="90">Anticipo 90%</option>
+                                <option value="80">Anticipo 80%</option>
+                                <option value="70">Anticipo 70%</option>
+                                <option value="50">Anticipo 50%</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="grid-mix mb-4">
                         <div>
                             <label>Cliente / Empresa Compradora</label>
-                            <input type="text" id="cliente_doc" required placeholder="Ej: VISCO ORINOCO, C.A. o VISCO FZ LLC" class="input-field">
+                            <input type="text" id="cliente_doc" required placeholder="Ej: VISCO ORINOCO, C.A." class="input-field">
                         </div>
                         <div>
                             <label>RIF o ID Registro</label>
                             <input type="text" id="rif_doc" placeholder="Ej: J-50438419-4" class="input-field" style="text-transform: uppercase;">
                         </div>
+                    </div>
+
+                    <div class="mb-4" style="display:none;">
+                        <input type="checkbox" id="switch_solo_divisas">
                     </div>
 
                     <!-- Artículos Dinámicos -->
@@ -233,7 +220,7 @@
                             <span id="total-bs-view" class="total-bs">Bs. 0,00</span>
                         </div>
                         <div style="text-align: right; flex: 1;">
-                            <label>Total:</label>
+                            <label>Total Documento:</label>
                             <span id="total-global-view" class="total-usd">$ 0.00</span>
                         </div>
                     </div>
@@ -247,16 +234,17 @@
 
             <!-- Historial Tabla -->
             <div class="card">
-                <h2>Historial de Emitidos</h2>
+                <h2>Historial Comercial de Emitidos</h2>
                 <div class="overflow-table">
                     <table>
                         <thead>
                             <tr>
-                                <th>Numeración</th>
-                                <th>Tipo / Destino</th>
-                                <th>Cliente / O.C.</th>
-                                <th style="text-align: right;">Monto Total</th>
-                                <th style="text-align: center;">Acciones</th>
+                                <th>Identificador</th>
+                                <th>Tipo / Flujo</th>
+                                <th>Cliente / Nexo</th>
+                                <th>Estado</th>
+                                <th style="text-align: right;">Monto</th>
+                                <th style="text-align: center;">Gestión</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-documentos"></tbody>
@@ -282,6 +270,7 @@
                     <span id="p-badge-fz" class="p-badge-fz hidden-element">FREE ZONE</span>
                     <div id="p-numero-doc" class="p-num">PRE-0000</div>
                     <p style="margin:2px 0; font-weight: bold;" id="p-orden-compra">O.C: --</p>
+                    <p style="margin:2px 0; font-weight: bold; color:#1f6feb; font-size:11px;" id="p-nexo-origen"></p>
                     <p style="margin:2px 0; color:#666;" id="p-fecha-emision">Fecha: --/--/----</p>
                     <div id="p-box-tasa-bcv" style="margin-top: 6px; border: 1px solid #d29922; background: #fffdf5; padding: 4px; font-size: 10px; font-family: monospace; border-radius: 4px;">
                         <span id="p-tasa-bcv-view" style="font-weight: bold;">1 USD = 0,00 Bs. (BCV)</span>
@@ -304,19 +293,19 @@
                 <div>
                     <p id="p-leyenda-cambiaria" class="p-leyenda"></p>
                 </div>
-                <div style="text-align: right; min-width: 220px;">
-                    <p style="margin: 0; font-size: 13px; font-weight: bold;" id="p-total-usd">TOTAL CONTRATO: $ 0.00</p>
-                    <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 900; color: #1e7e34;" id="p-total-bs">TOTAL EN BS: Bs. 0,00</p>
+                <div style="text-align: right; min-width: 250px;">
+                    <p style="margin: 0; font-size: 12px; color:#555;" id="p-subtotal-usd">Total Contrato: $ 0.00</p>
+                    <p style="margin: 2px 0; font-size: 14px; font-weight: bold; color: #1e7e34;" id="p-anticipo-usd">Monto Anticipo (--%): $ 0.00</p>
+                    <p style="margin: 4px 0 0 0; font-size: 14px; font-weight: 900; color: #b97503;" id="p-total-bs"></p>
                 </div>
             </div>
             
-            <div style="margin-top: 60px; width: 180px; text-align: center; border-top: 1px solid black; padding-top: 4px; font-weight: bold; font-size: 10px;">
+            <div style="margin-top: 50px; width: 180px; text-align: center; border-top: 1px solid black; padding-top: 4px; font-weight: bold; font-size: 10px;">
                 Atentamente,<br>Wladimir Cova
             </div>
         </div>
     </div>
 
-    <!-- Script de Control Seguro Local -->
     <script>
         let listaDocumentos = JSON.parse(localStorage.getItem('documentos_cova_local')) || [];
         let totalCalculadoUSD = 0;
@@ -325,15 +314,33 @@
         const btnJurisFz = document.getElementById('btn-juris-fz');
         const hiddenJuris = document.getElementById('jurisdiccion_val');
         const checkboxSoloDivisas = document.getElementById('switch_solo_divisas');
+        const selectTipoDoc = document.getElementById('tipo_doc');
+        const wrapperDocOrigen = document.getElementById('wrapper-documento-origen');
+        const lblDocOrigen = document.getElementById('lbl-doc-origen');
+        const selectAnticipo = document.getElementById('porcentaje_anticipo');
+        const wrapperAnticipo = document.getElementById('wrapper-anticipo');
 
-        // Eventos para Botones de Control de Jurisdicción (Estilo Tabs)
-        btnJurisVe.addEventListener('click', function() {
-            cambiarEntornoJurisdiccion('NACIONAL');
-        });
+        // Escucha cambios del tipo de documento para ajustar inputs de trazabilidad
+        selectTipoDoc.addEventListener('change', actualizarCamposFlujo);
 
-        btnJurisFz.addEventListener('click', function() {
-            cambiarEntornoJurisdiccion('FREE_ZONE');
-        });
+        function actualizarCamposFlujo() {
+            const tipo = selectTipoDoc.value;
+            if (tipo === 'PRESUPUESTO') {
+                wrapperDocOrigen.style.display = 'none';
+                wrapperAnticipo.style.display = 'none';
+            } else if (tipo === 'PROFORMA') {
+                wrapperDocOrigen.style.display = 'block';
+                lblDocOrigen.innerText = "Enlazado a Presupuesto N°";
+                wrapperAnticipo.style.display = 'block';
+            } else if (tipo === 'NOTA DE ENTREGA') {
+                wrapperDocOrigen.style.display = 'block';
+                lblDocOrigen.innerText = "Enlazado a Proforma N°";
+                wrapperAnticipo.style.display = 'none';
+            }
+        }
+
+        btnJurisVe.addEventListener('click', () => cambiarEntornoJurisdiccion('NACIONAL'));
+        btnJurisFz.addEventListener('click', () => cambiarEntornoJurisdiccion('FREE_ZONE'));
 
         function cambiarEntornoJurisdiccion(modo) {
             hiddenJuris.value = modo;
@@ -349,10 +356,6 @@
                 dispararEfectoSoloDivisas(false);
             }
         }
-
-        checkboxSoloDivisas.addEventListener('change', function() {
-            dispararEfectoSoloDivisas(this.checked);
-        });
 
         function dispararEfectoSoloDivisas(ocultar) {
             const wrapperTasa = document.getElementById('wrapper-tasa-bcv');
@@ -377,54 +380,46 @@
             const contenedor = document.getElementById('contenedor-filas');
             const div = document.createElement('div');
             div.className = "fila-articulo";
-            
             div.innerHTML = `
                 <input type="number" placeholder="Cant" value="${cant}" required class="input-field w-cant item-cant">
-                <input type="text" placeholder="Descripción del artículo / servicio" value="${desc}" required class="input-field w-flex item-desc">
+                <input type="text" placeholder="Descripción del artículo" value="${desc}" required class="input-field w-flex item-desc">
                 <input type="number" step="0.01" placeholder="Precio $" value="${precio}" required class="input-field w-precio item-precio">
                 <button type="button" class="btn-remove-row">✕</button>
             `;
-            
             div.querySelector('.item-cant').addEventListener('input', calcularTotalGlobal);
             div.querySelector('.item-precio').addEventListener('input', calcularTotalGlobal);
             div.querySelector('.btn-remove-row').addEventListener('click', function() {
                 div.remove();
                 calcularTotalGlobal();
             });
-
             contenedor.appendChild(div);
             calcularTotalGlobal();
         }
 
         function calcularTotalGlobal() {
             let total = 0;
-            const filas = document.querySelectorAll('.fila-articulo');
-            filas.forEach(f => {
+            document.querySelectorAll('.fila-articulo').forEach(f => {
                 const c = parseFloat(f.querySelector('.item-cant').value) || 0;
                 const p = parseFloat(f.querySelector('.item-precio').value) || 0;
                 total += (c * p);
             });
-
             totalCalculadoUSD = total;
             document.getElementById('total-global-view').innerText = `$ ${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-
             const tasa = parseFloat(document.getElementById('tasa_bcv').value) || 0;
-            const totalBs = total * tasa;
-            document.getElementById('total-bs-view').innerText = `Bs. ${totalBs.toLocaleString('es-VE', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-bs-view').innerText = `Bs. ${(total * tasa).toLocaleString('es-VE', {minimumFractionDigits: 2})}`;
         }
 
         document.getElementById('btn-add-fila').addEventListener('click', () => agregarFilaArticulo());
         document.getElementById('tasa_bcv').addEventListener('input', calcularTotalGlobal);
 
+        // FORM SUBMIT
         document.getElementById('doc-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const editId = document.getElementById('edit_id').value;
-            const tipo = document.getElementById('tipo_doc').value;
+            const tipo = selectTipoDoc.value;
             const juris = hiddenJuris.value;
-            const tasa = parseFloat(document.getElementById('tasa_bcv').value) || 0;
-            const soloDivisas = checkboxSoloDivisas.checked;
-
             const items = [];
+            
             document.querySelectorAll('.fila-articulo').forEach(f => {
                 items.push({
                     cant: parseFloat(f.querySelector('.item-cant').value) || 0,
@@ -436,16 +431,17 @@
             const dataObj = {
                 tipo: tipo,
                 jurisdiccion: juris,
-                tasaBcv: tasa,
-                soloDivisas: soloDivisas,
+                tasaBcv: parseFloat(document.getElementById('tasa_bcv').value) || 0,
+                soloDivisas: checkboxSoloDivisas.checked,
                 ordenCompra: document.getElementById('orden_compra').value.toUpperCase() || 'N/A',
-                moneda: document.getElementById('tipo_moneda').value.toUpperCase(),
+                docOrigen: document.getElementById('doc_origen_ref').value.toUpperCase() || 'N/A',
+                porcentajeAnticipo: parseInt(selectAnticipo.value) || 100,
                 empresaEmisora: document.getElementById('empresa_emisora').value,
                 cliente: document.getElementById('cliente_doc').value.toUpperCase(),
                 rif: document.getElementById('rif_doc').value.toUpperCase() || 'N/A',
                 items: items,
                 total: totalCalculadoUSD,
-                totalBs: soloDivisas ? 0 : (totalCalculadoUSD * tasa)
+                estado: 'PENDIENTE'
             };
 
             if (editId) {
@@ -454,15 +450,13 @@
                     dataObj.id = editId;
                     dataObj.numeroDocumento = listaDocumentos[index].numeroDocumento;
                     dataObj.fecha = listaDocumentos[index].fecha;
+                    dataObj.estado = listaDocumentos[index].estado;
                     listaDocumentos[index] = dataObj;
                 }
                 cancelarEdicion();
             } else {
                 const totalDeEsteTipo = listaDocumentos.filter(d => d.tipo === tipo).length;
-                
-                let prefijo = "PRE";
-                if (tipo === "PROFORMA") prefijo = "PROF";
-                if (tipo === "NOTA DE ENTREGA") prefijo = "NE";
+                let prefijo = tipo === "PROFORMA" ? "PROF" : (tipo === "NOTA DE ENTREGA" ? "NE" : "PRE");
                 
                 dataObj.id = 'ID-' + Date.now();
                 dataObj.numeroDocumento = `${prefijo}-${(totalDeEsteTipo + 1).toString().padStart(4, '0')}`;
@@ -471,11 +465,11 @@
             }
 
             localStorage.setItem('documentos_cova_local', JSON.stringify(listaDocumentos));
-            
             this.reset();
+            document.getElementById('doc_origen_ref').value = "";
             cambiarEntornoJurisdiccion('NACIONAL');
             document.getElementById('contenedor-filas').innerHTML = "";
-            document.getElementById('tipo_moneda').value = "DOLAR USD";
+            actualizarCamposFlujo();
             agregarFilaArticulo();
             renderTablaDocs();
         });
@@ -485,29 +479,85 @@
             tbody.innerHTML = "";
 
             listaDocumentos.forEach(d => {
-                const tagJuris = d.jurisdiccion === 'FREE_ZONE' 
-                    ? '<span style="background-color:#da3633; color:white; padding:2px 6px; font-size:10px; border-radius:3px; font-weight:bold;">FZ</span>' 
-                    : '<span style="background-color:#1f6feb; color:white; padding:2px 6px; font-size:10px; border-radius:3px; font-weight:bold;">VE</span>';
+                const tagJuris = d.jurisdiccion === 'FREE_ZONE' ? '<span style="background:#da3633; color:white; padding:2px 4px; font-size:10px; border-radius:3px;">FZ</span>' : '<span style="background:#1f6feb; color:white; padding:2px 4px; font-size:10px; border-radius:3px;">VE</span>';
+                const nexoText = d.docOrigen && d.docOrigen !== 'N/A' ? `<br><span style="color:#58a6ff; font-size:11px;">Vinculo: ${d.docOrigen}</span>` : '';
+                const condPagoText = d.tipo === 'PROFORMA' ? `<br><span style="color:#3fb950; font-size:11px;">Cobro: ${d.porcentajeAnticipo}%</span>` : '';
                 
+                let badgeEstado = `<span class="badge-status status-pendiente">PENDIENTE</span>`;
+                if (d.estado === 'ACEPTADO') badgeEstado = `<span class="badge-status status-aceptado">ACEPTADO ✅</span>`;
+
+                let btnFlujoRapido = '';
+                if (d.tipo === 'PRESUPUESTO' && d.estado === 'PENDIENTE') {
+                    btnFlujoRapido = `<button class="btn-action btn-check" onclick="cambiarEstadoDoc('${d.id}', 'ACEPTADO')">✔️ Aprobar</button>`;
+                } else if (d.tipo === 'PRESUPUESTO' && d.estado === 'ACEPTADO') {
+                    btnFlujoRapido = `<button class="btn-action btn-check" style="background:#85e89d; color:#032f11;" onclick="convertirPresupuestoAProforma('${d.id}')">➡️ Convertir a Prof</button>`;
+                } else if (d.tipo === 'PROFORMA') {
+                    btnFlujoRapido = `<button class="btn-action btn-check" style="background:#f1e05a; color:black;" onclick="convertirProformaANota('${d.id}')">📦 Crear N.E.</button>`;
+                }
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="td-num">${d.numeroDocumento}</td>
                     <td><div style="font-weight:bold; font-size:11px; margin-bottom:4px;">${d.tipo}</div>${tagJuris}</td>
-                    <td><strong>${d.cliente}</strong><br><span style="color:#8b949e; font-size:11px;">O.C: ${d.ordenCompra}</span></td>
-                    <td class="td-total">$ ${(d.total || 0).toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+                    <td><strong>${d.cliente}</strong><br><span style="color:#8b949e; font-size:11px;">O.C: ${d.ordenCompra}</span>${nexoText}${condPagoText}</td>
+                    <td>${badgeEstado}</td>
+                    <td class="td-total">$ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
                     <td class="actions-cell">
-                        <button data-id="${d.id}" class="btn-action btn-p">🖨️ Ver</button>
-                        <button data-id="${d.id}" class="btn-action btn-e">✏️</button>
-                        <button data-id="${d.id}" class="btn-action btn-d">🗑️</button>
+                        ${btnFlujoRapido}
+                        <button onclick="abrirVisorImpresion('${d.id}')" class="btn-action btn-p">🖨️ Ver</button>
+                        <button onclick="cargarFormEdicion('${d.id}')" class="btn-action btn-e">✏️</button>
+                        <button onclick="borrarRegistro('${d.id}')" class="btn-action btn-d">🗑️</button>
                     </td>
                 `;
-
-                tr.querySelector('.btn-p').addEventListener('click', () => abrirVisorImpresion(d.id));
-                tr.querySelector('.btn-e').addEventListener('click', () => cargarFormEdicion(d.id));
-                tr.querySelector('.btn-d').addEventListener('click', () => borrarRegistro(d.id));
-
                 tbody.appendChild(tr);
             });
+        }
+
+        function cambiarEstadoDoc(id, nuevoEstado) {
+            const index = listaDocumentos.findIndex(d => d.id === id);
+            if (index !== -1) {
+                listaDocumentos[index].estado = nuevoEstado;
+                localStorage.setItem('documentos_cova_local', JSON.stringify(listaDocumentos));
+                renderTablaDocs();
+            }
+        }
+
+        function convertirPresupuestoAProforma(id) {
+            const d = listaDocumentos.find(doc => doc.id === id);
+            if (!d) return;
+            
+            selectTipoDoc.value = 'PROFORMA';
+            actualizarCamposFlujo();
+            document.getElementById('doc_origen_ref').value = d.numeroDocumento;
+            document.getElementById('cliente_doc').value = d.cliente;
+            document.getElementById('rif_doc').value = d.rif;
+            document.getElementById('orden_compra').value = d.ordenCompra !== 'N/A' ? d.ordenCompra : '';
+            cambiarEntornoJurisdiccion(d.jurisdiccion);
+            
+            document.getElementById('contenedor-filas').innerHTML = "";
+            d.items.forEach(it => agregarFilaArticulo(it.cant, it.descripcion, it.precio));
+            
+            document.getElementById('form-titulo').innerText = `Proforma basada en ${d.numeroDocumento}`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function convertirProformaANota(id) {
+            const d = listaDocumentos.find(doc => doc.id === id);
+            if (!d) return;
+
+            selectTipoDoc.value = 'NOTA DE ENTREGA';
+            actualizarCamposFlujo();
+            document.getElementById('doc_origen_ref').value = d.numeroDocumento;
+            document.getElementById('cliente_doc').value = d.cliente;
+            document.getElementById('rif_doc').value = d.rif;
+            document.getElementById('orden_compra').value = d.ordenCompra !== 'N/A' ? d.ordenCompra : '';
+            cambiarEntornoJurisdiccion(d.jurisdiccion);
+
+            document.getElementById('contenedor-filas').innerHTML = "";
+            d.items.forEach(it => agregarFilaArticulo(it.cant, it.descripcion, it.precio));
+
+            document.getElementById('form-titulo').innerText = `Nota de Entrega basada en ${d.numeroDocumento}`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function cargarFormEdicion(id) {
@@ -515,29 +565,24 @@
             if(!d) return;
 
             document.getElementById('edit_id').value = d.id;
-            document.getElementById('tipo_doc').value = d.tipo;
+            selectTipoDoc.value = d.tipo;
+            actualizarCamposFlujo();
+            
+            document.getElementById('doc_origen_ref').value = d.docOrigen && d.docOrigen !== 'N/A' ? d.docOrigen : '';
+            selectAnticipo.value = d.porcentajeAnticipo || 100;
             
             cambiarEntornoJurisdiccion(d.jurisdiccion || 'NACIONAL');
-
-            document.getElementById('orden_compra').value = d.ordenCompra || '';
-            document.getElementById('tipo_moneda').value = d.moneda || 'DOLAR USD';
+            document.getElementById('orden_compra').value = d.ordenCompra !== 'N/A' ? d.ordenCompra : '';
             document.getElementById('empresa_emisora').value = d.empresaEmisora;
             document.getElementById('cliente_doc').value = d.cliente;
             document.getElementById('rif_doc').value = d.rif;
-
-            checkboxSoloDivisas.checked = d.soloDivisas || false;
-            dispararEfectoSoloDivisas(d.soloDivisas);
 
             if (!d.soloDivisas) {
                 document.getElementById('tasa_bcv').value = d.tasaBcv || '1.00';
             }
 
             document.getElementById('contenedor-filas').innerHTML = "";
-            if(d.items && d.items.length > 0) {
-                d.items.forEach(it => agregarFilaArticulo(it.cant, it.descripcion, it.precio));
-            } else {
-                agregarFilaArticulo();
-            }
+            d.items.forEach(it => agregarFilaArticulo(it.cant, it.descripcion, it.precio));
 
             document.getElementById('form-titulo').innerText = `✏️ Editando: ${d.numeroDocumento}`;
             document.getElementById('btn-cancelar').style.display = 'inline-block';
@@ -545,7 +590,7 @@
         }
 
         function borrarRegistro(id) {
-            if(confirm("⚠️ ¿Deseas eliminar permanentemente este registro?")) {
+            if(confirm("⚠️ ¿Deseas eliminar este registro?")) {
                 listaDocumentos = listaDocumentos.filter(d => d.id !== id);
                 localStorage.setItem('documentos_cova_local', JSON.stringify(listaDocumentos));
                 renderTablaDocs();
@@ -555,10 +600,12 @@
         function cancelarEdicion() {
             document.getElementById('edit_id').value = "";
             document.getElementById('doc-form').reset();
+            document.getElementById('doc_origen_ref').value = "";
             cambiarEntornoJurisdiccion('NACIONAL');
             document.getElementById('contenedor-filas').innerHTML = "";
             document.getElementById('form-titulo').innerText = "Nuevo Documento";
             document.getElementById('btn-cancelar').style.display = 'none';
+            actualizarCamposFlujo();
             agregarFilaArticulo();
         }
         document.getElementById('btn-cancelar').addEventListener('click', cancelarEdicion);
@@ -574,6 +621,14 @@
             document.getElementById('p-fecha-emision').innerText = `Fecha: ${d.fecha}`;
             document.getElementById('p-cliente-nombre').innerText = d.cliente;
             document.getElementById('p-cliente-rif').innerHTML = `<strong>ID / REGISTRO:</strong> ${d.rif}`;
+
+            const pNexo = document.getElementById('p-nexo-origen');
+            if(d.docOrigen && d.docOrigen !== 'N/A') {
+                pNexo.innerText = d.tipo === 'PROFORMA' ? `Ref. Presupuesto: ${d.docOrigen}` : `Ref. Proforma: ${d.docOrigen}`;
+                pNexo.style.display = 'block';
+            } else {
+                pNexo.style.display = 'none';
+            }
 
             const pTabla = document.getElementById('p-tabla-items');
             pTabla.innerHTML = "";
@@ -591,32 +646,50 @@
             const boxTasaPrint = document.getElementById('p-box-tasa-bcv');
             const totalBsPrint = document.getElementById('p-total-bs');
             const leyendaPrint = document.getElementById('p-leyenda-cambiaria');
+            
+            const subtotalUsd = d.total;
+            const pct = d.porcentajeAnticipo || 100;
+            const montoAnticipoUsd = (subtotalUsd * pct) / 100;
 
-            document.getElementById('p-total-usd').innerText = `TOTAL CONTRATO: $ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+            document.getElementById('p-subtotal-usd').innerText = `Monto Total Contrato: $ ${subtotalUsd.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+            
+            if(pct < 100 && d.tipo === 'PROFORMA') {
+                document.getElementById('p-anticipo-usd').innerText = `MONTO EXIGIBLE (${pct}%): $ ${montoAnticipoUsd.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+                document.getElementById('p-anticipo-usd').style.display = 'block';
+            } else {
+                document.getElementById('p-anticipo-usd').innerText = `MONTO NETO A PAGAR: $ ${subtotalUsd.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+            }
 
             if (d.jurisdiccion === 'FREE_ZONE') {
                 badgeFzPrint.classList.remove('hidden-element');
                 boxTasaPrint.classList.add('hidden-element');
                 totalBsPrint.classList.add('hidden-element');
-                leyendaPrint.innerText = `FREE ZONE TRANSACTION TERMS: THIS OPERATIONAL ACQUISITION IS ASSIGNED DIRECTLY TO INTERNATIONAL PROTOCOLS. THE CONTRACTUAL VALUE OF $ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})} USD IS SUBJECT TO EXCLUSIVE SETTLEMENT IN FOREIGN CURRENCY DIRECTLY VIA TRANS-BORDER SETTLEMENT RULES.`;
-            } else if (d.soloDivisas) {
-                badgeFzPrint.classList.add('hidden-element');
-                boxTasaPrint.classList.add('hidden-element');
-                totalBsPrint.classList.add('hidden-element');
-                leyendaPrint.innerText = `TERMINOS DE TRANSFERENCIA: EL VALOR DE ESTA ADQUISICIÓN SE ENCUENTRA SUJETO A LIQUIDACIÓN EXCLUSIVA Y DIRECTA EN DIVISAS DE ACUERDO A LOS PROTOCOLOS COMERCIALES ESTABLECIDOS ENTRE LAS PARTES.`;
+                leyendaPrint.innerText = `FREE ZONE TRANSACTION TERMS: THIS OPERATIONAL ACQUISITION IS ASSIGNED DIRECTLY TO INTERNATIONAL PROTOCOLS. THE CONTRACTUAL VALUE OF $ ${montoAnticipoUsd.toLocaleString('en-US', {minimumFractionDigits:2})} USD (${pct}%) IS SUBJECT TO EXCLUSIVE SETTLEMENT IN FOREIGN CURRENCY DIRECTLY VIA TRANS-BORDER SETTLEMENT RULES.`;
             } else {
                 badgeFzPrint.classList.add('hidden-element');
-                boxTasaPrint.classList.remove('hidden-element');
-                totalBsPrint.classList.remove('hidden-element');
-                document.getElementById('p-tasa-bcv-view').innerText = `1 USD = ${(d.tasaBcv || 1).toLocaleString('es-VE', {minimumFractionDigits:2})} Bs. (BCV)`;
-                totalBsPrint.innerText = `TOTAL EN BS: Bs. ${d.totalBs.toLocaleString('es-VE', {minimumFractionDigits:2})}`;
-                leyendaPrint.innerText = `EL MONTO TOTAL DE ESTA OPERACIÓN ES DE $ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})} USD, EQUIVALENTES A Bs. ${d.totalBs.toLocaleString('es-VE', {minimumFractionDigits:2})} PAGADEROS EN BOLÍVARES A LA TASA CAMBIARIA DEL BANCO CENTRAL DE VENEZUELA (BCV) VIGENTE A LA FECHA DE LIQUIDACIÓN EFECTIVA.`;
+                if (d.soloDivisas) {
+                    boxTasaPrint.classList.add('hidden-element');
+                    totalBsPrint.classList.add('hidden-element');
+                    leyendaPrint.innerText = `TERMINOS DE TRANSFERENCIA: EL VALOR DE ESTA ADQUISICIÓN SE ENCUENTRA SUJETO A LIQUIDACIÓN EXCLUSIVA Y DIRECTA EN DIVISAS DE ACUERDO A LOS PROTOCOLOS COMERCIALES ESTABLECIDOS ENTRE LAS PARTES.`;
+                } else {
+                    boxTasaPrint.classList.remove('hidden-element');
+                    totalBsPrint.classList.remove('hidden-element');
+                    
+                    const tasa = d.tasaBcv || 1;
+                    const totalBsAnticipo = montoAnticipoUsd * tasa;
+                    
+                    document.getElementById('p-tasa-bcv-view').innerText = `1 USD = ${tasa.toLocaleString('es-VE', {minimumFractionDigits:2})} Bs. (BCV)`;
+                    totalBsPrint.innerText = `TOTAL EN BS (${pct}%): Bs. ${totalBsAnticipo.toLocaleString('es-VE', {minimumFractionDigits:2})}`;
+                    
+                    leyendaPrint.innerText = `EL MONTO TOTAL DEL CONTRATO ES DE $ ${subtotalUsd.toLocaleString('en-US', {minimumFractionDigits:2})} USD. PARA ESTA EMISIÓN SE LIQUIDA EL ${pct}%, EQUIVALENTE A $ ${montoAnticipoUsd.toLocaleString('en-US', {minimumFractionDigits:2})} USD, PAGADEROS EN BOLÍVARES A UN EQUIVALENTE DE Bs. ${totalBsAnticipo.toLocaleString('es-VE', {minimumFractionDigits:2})} A LA TASA CAMBIARIA OFICIAL DEL BANCO CENTRAL DE VENEZUELA (BCV) VIGENTE A LA FECHA DEL PAGO EFECTIVO.`;
+                }
             }
 
             window.print();
         }
 
-        // Arranque
+        // Inicialización
+        actualizarCamposFlujo();
         agregarFilaArticulo();
         renderTablaDocs();
     </script>
