@@ -32,56 +32,28 @@
             <h1 class="text-2xl font-bold text-white flex items-center gap-2">
                 📄 Generador de Presupuestos, Proformas y Notas
             </h1>
-            <a href="index.html" class="text-sm text-gray-400 hover:text-blue-400 transition">⬅ Concretar o Volver al Control de Órdenes</a>
+            <a href="index.html" class="text-sm text-gray-400 hover:text-blue-400 transition">⬅ Volver al Control de Órdenes</a>
         </div>
 
-        <!-- Formulario unificado igual a la captura image_6eb970.png -->
         <div class="card p-6 rounded-xl shadow-lg mb-6">
             <h2 id="form-titulo" class="text-md font-bold text-white mb-4">Nuevo Documento</h2>
-            <form id="doc-form" onsubmit="guardarDocumento(event)" class="space-y-4">
+            <form id="doc-form" class="space-y-4">
                 <input type="hidden" id="edit_id" value="">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-400 mb-1">Tipo de Documento</label>
                         <select id="tipo_doc" class="w-full input-field rounded p-2 text-sm text-white font-semibold">
-                            <option value="PROFORMA_VE">PROFORMA VENEZOLANA (Nacional)</option>
-                            <option value="PROFORMA_FZ">PROFORMA INTERNACIONAL (FZ - Inglés)</option>
                             <option value="PRESUPUESTO">PRESUPUESTO (PRE)</option>
+                            <option value="PROFORMA_VE">PROFORMA (Nacional)</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-400 mb-1">Empresa Emisora</label>
                         <select id="empresa_emisora" class="w-full input-field rounded p-2 text-sm text-white">
-                            <option value="Soluciones Integrales 360 F.P">SOLUCIONES INTEGRALES 360 F.P.</option>
-                            <option value="Security Mallory 360 C.A">SECURITY MALLORY 360 C.A.</option>
+                            <option value="SOLUCIONES 360">SOLUCIONES INTEGRALES 360 F.P.</option>
+                            <option value="SECURITY MALLORY">SECURITY MALLORY 360 C.A.</option>
                         </select>
-                    </div>
-                </div>
-
-                <!-- Ventana / Campos de configuración de condiciones comerciales solicitadas -->
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-gray-900/40 p-3 rounded border border-gray-800">
-                    <div>
-                        <label class="block text-[11px] font-bold text-blue-400 mb-1">Orden de Compra (O.C.)</label>
-                        <input type="text" id="orden_compra" placeholder="Ej: 006059/2026" class="w-full input-field rounded p-1.5 text-xs uppercase font-mono">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-blue-400 mb-1">Anticipo Solicitado</label>
-                        <select id="porcentaje_anticipo" class="w-full input-field rounded p-1.5 text-xs text-white">
-                            <option value="100%">100% Anticipado</option>
-                            <option value="80%">80% Anticipado</option>
-                            <option value="70%">70% Anticipado</option>
-                            <option value="50%">50% Anticipado</option>
-                            <option value="20%">20% Anticipado</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-amber-400 mb-1">Tasa Oficial BCV</label>
-                        <input type="number" step="0.01" id="tasa_bcv" placeholder="Ej: 652.97" required class="w-full input-field rounded p-1.5 text-xs text-center font-bold text-white font-mono" oninput="calcularTotalGlobal()">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-400 mb-1">Tipo de Moneda</label>
-                        <input type="text" id="tipo_moneda" value="DOLAR USDT" class="w-full input-field rounded p-1.5 text-xs text-center font-semibold uppercase">
                     </div>
                 </div>
 
@@ -92,27 +64,20 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-400 mb-1">RIF / Identificación</label>
-                        <input type="text" id="rif_doc" placeholder="Ej: J-50438419-4" class="w-full input-field rounded p-2 text-sm uppercase">
+                        <input type="text" id="rif_doc" placeholder="Ej: J-12345678-9" class="w-full input-field rounded p-2 text-sm uppercase">
                     </div>
                 </div>
 
-                <!-- Bloque dinámico de artículos igual a la captura de pantalla -->
                 <div>
                     <label class="block text-xs font-bold text-gray-400 mb-2">Artículos / Servicios</label>
                     <div id="contenedor-filas" class="space-y-2">
-                        <!-- Las filas dinámicas se renderizan aquí -->
-                    </div>
-                    <button type="button" onclick="agregarFilaArticulo()" class="mt-2 text-xs font-bold text-blue-400 hover:text-blue-300 transition flex items-center gap-1">
+                        </div>
+                    <button type="button" id="btn-add-fila" class="mt-2 text-xs font-bold text-blue-400 hover:text-blue-300 transition flex items-center gap-1">
                         + Añadir fila
                     </button>
                 </div>
 
-                <!-- Mostrador del Total Dinámico Cambiario -->
-                <div class="pt-4 border-t border-gray-800 flex justify-between items-center">
-                    <div>
-                        <span class="text-xs font-bold text-gray-400 block">Equivalencia Cambiaria Estimada:</span>
-                        <span id="total-bcv-view" class="text-sm font-mono font-bold text-amber-500">Bs. 0,00</span>
-                    </div>
+                <div class="pt-4 border-t border-gray-800 flex justify-end items-center">
                     <div class="text-right">
                         <span class="text-sm font-bold text-gray-400">Total:</span>
                         <span id="total-global-view" class="text-2xl font-black text-white ml-2">$ 0.00</span>
@@ -120,13 +85,12 @@
                 </div>
 
                 <div class="flex gap-2 pt-2">
-                    <button type="button" id="btn-cancelar" onclick="cancelarEdicion()" class="w-1/4 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2 rounded text-xs transition hidden">Cancelar</button>
+                    <button type="button" id="btn-cancelar" class="w-1/4 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2 rounded text-xs transition hidden">Cancelar</button>
                     <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded text-sm tracking-wide uppercase transition">GENERAR DOCUMENTO</button>
                 </div>
             </form>
         </div>
 
-        <!-- Historial de Emitidos -->
         <div class="card p-6 rounded-xl shadow-lg">
             <h2 class="text-md font-bold text-white mb-4">Historial de Emitidos</h2>
             <div class="overflow-x-auto">
@@ -135,91 +99,23 @@
                         <tr>
                             <th class="p-3">Numeración</th>
                             <th class="p-3">Tipo</th>
-                            <th class="p-3">Cliente / O.C</th>
-                            <th class="p-3 text-center">Tasa BCV</th>
+                            <th class="p-3">Cliente</th>
                             <th class="p-3 text-right">Monto Total</th>
-                            <th class="p-3 text-center">Acciones</th>
+                            <th class="p-3浏览 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-documentos">
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- AREA DE IMPRESIÓN ADAPTATIVA COVA -->
-    <div id="print-area" class="hidden print-view max-w-4xl mx-auto p-6 bg-white text-black text-xs">
-        <div class="flex justify-between items-start border-b-2 border-gray-300 pb-4 mb-4">
-            <div>
-                <h1 class="text-2xl font-black text-gray-900" id="p-empresa-emisora">EMPRESA</h1>
-                <p class="text-[10px] text-gray-500 font-mono">RIF: V-15185617-5 | wladimircova41@gmail.com</p>
-                <div class="mt-3 border border-gray-300 p-2 rounded bg-gray-50 max-w-md">
-                    <p class="font-bold text-gray-800 uppercase text-[9px]" id="lbl-cliente">CLIENTE / BUYER:</p>
-                    <p id="p-cliente-nombre" class="font-mono font-bold text-black text-xs"></p>
-                    <p id="p-cliente-rif"></p>
-                </div>
-            </div>
-            <div class="text-right">
-                <div id="p-badge-tipo" class="bg-black text-white px-2 py-0.5 font-black text-[10px] rounded mb-1 inline-block">FACTURA PROFORMA</div>
-                <p class="text-sm font-mono font-bold text-red-600" id="p-numero-doc">PROF-0000</p>
-                <p class="text-[10px] font-bold text-gray-700" id="p-orden-compra">O.C: --</p>
-                <p class="text-[9px] text-gray-500" id="p-fecha-emision">Fecha: --/--/----</p>
-                <div class="mt-2 border border-amber-300 bg-amber-50 p-1 text-[9px] font-mono rounded inline-block">
-                    <p class="text-black font-black" id="p-tasa-bcv-view">1 USD = 0,00 Bs.</p>
-                </div>
-            </div>
-        </div>
-
-        <table class="w-full text-left text-xs mb-4 border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100 font-bold border-b border-gray-300">
-                    <th class="p-2 text-black w-12 text-center border-r border-gray-300">CANT.</th>
-                    <th class="p-2 text-black border-r border-gray-300">DESCRIPCIÓN DE LA PARTIDA / ARTÍCULOS</th>
-                    <th class="p-2 text-black w-24 text-right">TOTAL ($)</th>
-                </tr>
-            </thead>
-            <tbody id="p-tabla-items">
-                <!-- Se inyectan dinámicamente al mandar a imprimir -->
-            </tbody>
-        </table>
-
-        <div class="grid grid-cols-2 gap-4 items-start border-t border-gray-200 pt-3">
-            <div class="border border-gray-300 p-2 rounded text-[9px] space-y-1">
-                <p class="font-bold text-gray-900 border-b pb-1 mb-1 uppercase" id="lbl-terminos">Términos de Venta</p>
-                <p><strong>1. Delivery:</strong> DDP Puerto Ordaz - Edo. Bolívar.</p>
-                <p id="p-term-moneda"><strong>2. Moneda Comercial:</strong> --</p>
-                <p><strong>3. Validez:</strong> 15 Días.</p>
-                <p id="p-term-pagos"><strong>4. Condiciones:</strong> --</p>
-                <p><strong>5. Garantía:</strong> 1 Año por equipos.</p>
-            </div>
-            <div class="border border-gray-300 p-2 rounded bg-gray-50 flex flex-col items-center justify-center">
-                <p class="text-[9px] font-bold text-gray-800 mb-1">DEPOSITAR EN WALLET REGISTRADA (USDT TRC20)</p>
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=TWx8uMmkTVKeWuQFEBWFD3dyn8sNDZFvry" class="w-14 h-14 border p-0.5 bg-white">
-                <p class="text-[8px] font-mono text-gray-500 mt-0.5">TWx8uMmkTVKeWuQFEBWFD3dyn8sNDZFvry</p>
-            </div>
-        </div>
-
-        <div class="mt-4 pt-3 border-t border-gray-300 flex justify-between items-start">
-            <div class="max-w-md">
-                <p class="text-[9px] text-gray-600 font-serif italic bg-gray-50 p-1.5 border rounded border-gray-200" id="p-leyenda-cambiaria"></p>
-            </div>
-            <div class="text-right">
-                <p class="text-xs font-bold text-gray-900" id="p-total-usd">TOTAL DIVISAS: $ 0.00</p>
-                <p class="text-sm font-black text-emerald-700" id="p-total-bs">TOTAL EN BS: Bs. 0,00</p>
-            </div>
-        </div>
-
-        <div class="flex justify-between items-end mt-12">
-            <div class="w-40 text-center border-t border-black pt-1 text-[9px] font-bold">Atentamente,<br>Wladimir Cova</div>
-        </div>
-    </div>
-
-    <!-- Lógica de Base de Datos y Multi-Filas Dinámicas -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Configuración oficial extraída de tu consola
         const firebaseConfig = {
             apiKey: "AIzaSyC_1qzfNPRuU8Fz4quhWIFVfIZGggI7r9A",
             authDomain: "operaciones-e645f.firebaseapp.com",
@@ -237,22 +133,32 @@
         let listaDocumentos = [];
         let totalCalculadoUSD = 0;
 
-        // Función nativa para añadir filas de artículos igual a la interfaz original
-        window.agregarFilaArticulo = function(cant = '', desc = '', precio = '') {
+        // Función para agregar filas al contenedor (Cant, Desc, Precio)
+        function agregarFilaArticulo(cant = '', desc = '', precio = '') {
             const contenedor = document.getElementById('contenedor-filas');
             const div = document.createElement('div');
             div.className = "flex gap-2 items-center fila-articulo";
             div.innerHTML = `
-                <input type="number" placeholder="Cant" value="${cant}" required class="w-16 input-field rounded p-1.5 text-xs text-center font-mono item-cant" oninput="calcularTotalGlobal()">
-                <input type="text" placeholder="Descripción del artículo / servicio" value="${desc}" required class="flex-1 input-field rounded p-1.5 text-xs uppercase item-desc">
-                <input type="number" step="0.01" placeholder="Precio $" value="${precio}" required class="w-24 input-field rounded p-1.5 text-xs text-right font-mono item-precio" oninput="calcularTotalGlobal()">
-                <button type="button" onclick="this.parentElement.remove(); calcularTotalGlobal();" class="text-red-500 hover:text-red-400 font-bold px-1 text-sm">✕</button>
+                <input type="number" placeholder="Cant" value="${cant}" required class="w-16 input-field rounded p-1.5 text-xs text-center font-mono item-cant">
+                <input type="text" placeholder="Descripción del artículo" value="${desc}" required class="flex-1 input-field rounded p-1.5 text-xs uppercase item-desc">
+                <input type="number" step="0.01" placeholder="Precio $" value="${precio}" required class="w-24 input-field rounded p-1.5 text-xs text-right font-mono item-precio">
+                <button type="button" class="btn-eliminar-fila text-red-500 hover:text-red-400 font-bold px-2 text-sm">✕</button>
             `;
+            
+            // Asignar eventos de cálculo automático
+            div.querySelector('.item-cant').addEventListener('input', calcularTotalGlobal);
+            div.querySelector('.item-precio').addEventListener('input', calcularTotalGlobal);
+            div.querySelector('.btn-eliminar-fila').addEventListener('click', function() {
+                div.remove();
+                calcularTotalGlobal();
+            });
+
             contenedor.appendChild(div);
             calcularTotalGlobal();
-        };
+        }
 
-        window.calcularTotalGlobal = function() {
+        // Calcula dinámicamente multiplicando Cantidad * Precio de cada renglón
+        function calcularTotalGlobal() {
             let total = 0;
             const filas = document.querySelectorAll('.fila-articulo');
             filas.forEach(f => {
@@ -263,13 +169,12 @@
 
             totalCalculadoUSD = total;
             document.getElementById('total-global-view').innerText = `$ ${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        }
 
-            const tasa = parseFloat(document.getElementById('tasa_bcv').value) || 0;
-            const totalBs = total * tasa;
-            document.getElementById('total-bcv-view').innerText = `Bs. ${totalBs.toLocaleString('es-VE', {minimumFractionDigits: 2})}`;
-        };
+        // Enlace del botón añadir fila de la interfaz
+        document.getElementById('btn-add-fila').addEventListener('click', () => agregarFilaArticulo());
 
-        // Escuchador en tiempo real de Firebase
+        // Escuchar datos de Firebase en tiempo real
         onSnapshot(query(docRef, orderBy("creadoEn", "desc")), (snapshot) => {
             listaDocumentos = [];
             snapshot.forEach((snap) => {
@@ -278,13 +183,12 @@
             renderTablaDocs();
         });
 
-        window.guardarDocumento = async function(e) {
+        // Guardar o Actualizar Documento
+        document.getElementById('doc-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editId = document.getElementById('edit_id').value;
             const tipo = document.getElementById('tipo_doc').value;
-            const tasa = parseFloat(document.getElementById('tasa_bcv').value) || 1;
 
-            // Mapear los ítems dinámicos de la tabla
             const items = [];
             document.querySelectorAll('.fila-articulo').forEach(f => {
                 items.push({
@@ -296,26 +200,21 @@
 
             const dataObj = {
                 tipo: tipo,
-                tasaBcv: tasa,
-                ordenCompra: document.getElementById('orden_compra').value.toUpperCase() || 'N/A',
-                anticipo: document.getElementById('porcentaje_anticipo').value,
-                moneda: document.getElementById('tipo_moneda').value.toUpperCase(),
                 empresaEmisora: document.getElementById('empresa_emisora').value,
                 cliente: document.getElementById('cliente_doc').value.toUpperCase(),
                 rif: document.getElementById('rif_doc').value.toUpperCase() || 'N/A',
                 items: items,
-                total: totalCalculadoUSD,
-                totalBs: totalCalculadoUSD * tasa
+                total: totalCalculadoUSD
             };
 
             if (editId) {
+                // Modo Edición
                 await updateDoc(doc(db, "documentos_cova", editId), dataObj);
                 cancelarEdicion();
             } else {
+                // Modo Nuevo: Autogenerar correlativo secuencial
                 const totalDeEsteTipo = listaDocumentos.filter(d => d.tipo === tipo).length;
-                let prefijo = "PRE";
-                if(tipo === "PROFORMA_VE") prefijo = "PROF-VE";
-                if(tipo === "PROFORMA_FZ") prefijo = "PROF-FZ";
+                const prefijo = tipo === "PRESUPUESTO" ? "PRE" : "PROF";
                 
                 dataObj.numeroDocumento = `${prefijo}-${(totalDeEsteTipo + 1).toString().padStart(4, '0')}`;
                 dataObj.fecha = new Date().toLocaleDateString('es-ES');
@@ -326,27 +225,23 @@
 
             document.getElementById('doc-form').reset();
             document.getElementById('contenedor-filas').innerHTML = "";
-            document.getElementById('tipo_moneda').value = "DOLAR USDT";
             agregarFilaArticulo(); 
-        };
+        });
 
+        // Cargar datos en el formulario para editar
         window.editarDocumentoLocal = function(id) {
             const d = listaDocumentos.find(doc => doc.id === id);
             if(!d) return;
 
             document.getElementById('edit_id').value = d.id;
             document.getElementById('tipo_doc').value = d.tipo;
-            document.getElementById('tasa_bcv').value = d.tasaBcv || '';
-            document.getElementById('orden_compra').value = d.ordenCompra || '';
-            document.getElementById('porcentaje_anticipo').value = d.anticipo || '100%';
-            document.getElementById('tipo_moneda').value = d.moneda || 'DOLAR USDT';
             document.getElementById('empresa_emisora').value = d.empresaEmisora;
             document.getElementById('cliente_doc').value = d.cliente;
             document.getElementById('rif_doc').value = d.rif;
 
-            // Limpiar y poblar los renglones dinámicos de artículos
             const contenedor = document.getElementById('contenedor-filas');
             contenedor.innerHTML = "";
+            
             if(d.items && d.items.length > 0) {
                 d.items.forEach(it => agregarFilaArticulo(it.cant, it.descripcion, it.precio));
             } else {
@@ -355,25 +250,28 @@
 
             document.getElementById('form-titulo').innerText = `✏️ Editando: ${d.numeroDocumento}`;
             document.getElementById('btn-cancelar').classList.remove('hidden');
-            calcularTotalGlobal();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        window.cancelarEdicion = function() {
-            document.getElementById('edit_id').value = "";
-            document.getElementById('doc-form').reset();
-            document.getElementById('contenedor-filas').innerHTML = "";
-            document.getElementById('tipo_moneda').value = "DOLAR USDT";
-            document.getElementById('form-titulo').innerText = "Nuevo Documento";
-            document.getElementById('btn-cancelar').classList.add('hidden');
-            agregarFilaArticulo();
-        };
-
+        // Eliminar de Firebase
         window.borrarDocumentoLocal = async function(id) {
-            if(confirm("⚠️ ¿Eliminar este documento del historial?")) {
+            if(confirm("⚠️ ¿Estás seguro de que deseas eliminar este documento permanentemente?")) {
                 await deleteDoc(doc(db, "documentos_cova", id));
             }
         };
 
+        // Cancelar acción de edición
+        function cancelarEdicion() {
+            document.getElementById('edit_id').value = "";
+            document.getElementById('doc-form').reset();
+            document.getElementById('contenedor-filas').innerHTML = "";
+            document.getElementById('form-titulo').innerText = "Nuevo Documento";
+            document.getElementById('btn-cancelar').classList.add('hidden');
+            agregarFilaArticulo();
+        }
+        document.getElementById('btn-cancelar').addEventListener('click', cancelarEdicion);
+
+        // Renderizar tabla del historial con acciones habilitadas
         function renderTablaDocs() {
             const tbody = document.getElementById('tabla-documentos');
             tbody.innerHTML = "";
@@ -384,72 +282,18 @@
                 tr.innerHTML = `
                     <td class="p-3 font-mono font-bold text-blue-400">${d.numeroDocumento}</td>
                     <td class="p-3 font-bold text-gray-400 text-[10px]">${d.tipo}</td>
-                    <td class="p-3 font-semibold text-white">${d.cliente} <br><span class="text-gray-500 font-mono text-[10px]">O.C: ${d.ordenCompra || 'N/A'}</span></td>
-                    <td class="p-3 text-center font-mono text-amber-400 font-bold">${(d.tasaBcv || 0).toFixed(2)}</td>
+                    <td class="p-3 font-semibold text-white">${d.cliente}</td>
                     <td class="p-3 text-right text-emerald-400 font-bold">$ ${(d.total || 0).toLocaleString('en-US', {minimumFractionDigits:2})}</td>
-                    <td class="p-3 text-center flex justify-center gap-1 mt-1">
-                        <button onclick="imprimirDocumentoLocal('${d.id}')" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded font-bold text-[10px]">🖨️ Imprimir PDF</button>
-                        <button onclick="editarDocumentoLocal('${d.id}')" class="bg-amber-600 hover:bg-amber-500 text-white px-2 py-1 rounded text-[10px]">✏️</button>
-                        <button onclick="borrarDocumentoLocal('${d.id}')" class="bg-red-700 hover:bg-red-600 text-white px-2 py-1 rounded text-[10px]">🗑️</button>
+                    <td class="p-3 text-center flex justify-center gap-2">
+                        <button onclick="editarDocumentoLocal('${d.id}')" class="bg-amber-600 hover:bg-amber-500 text-white px-2 py-1 rounded text-xs font-bold transition">✏️ Editar</button>
+                        <button onclick="borrarDocumentoLocal('${d.id}')" class="bg-red-700 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-bold transition">🗑️ Eliminar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        window.imprimirDocumentoLocal = function(id) {
-            const d = listaDocumentos.find(doc => doc.id === id);
-            if(!d) return;
-
-            const esFZ = (d.tipo === 'PROFORMA_FZ');
-            document.getElementById('p-badge-tipo').innerText = esFZ ? "PROFORMA INVOICE" : "FACTURA PROFORMA";
-            document.getElementById('lbl-cliente').innerText = esFZ ? "CLIENTE / BUYER:" : "CLIENTE / EMPRESA COMPRADORA:";
-            document.getElementById('lbl-terminos').innerText = esFZ ? "Terms of Sale" : "Términos de Venta";
-
-            document.getElementById('p-empresa-emisora').innerText = d.empresaEmisora.toUpperCase();
-            document.getElementById('p-numero-doc').innerText = d.numeroDocumento;
-            document.getElementById('p-orden-compra').innerText = `O.C: ${d.ordenCompra}`;
-            document.getElementById('p-fecha-emision').innerText = `Fecha: ${d.fecha}`;
-            document.getElementById('p-cliente-nombre').innerText = d.cliente;
-            document.getElementById('p-cliente-rif').innerHTML = `<strong>RIF / ID:</strong> ${d.rif}`;
-
-            // Renderizar la lista completa de artículos en la impresión limpia
-            const pTabla = document.getElementById('p-tabla-items');
-            pTabla.innerHTML = "";
-            if(d.items) {
-                d.items.forEach(it => {
-                    const tr = document.createElement('tr');
-                    tr.className = "border-b border-gray-200";
-                    tr.innerHTML = `
-                        <td class="p-2 text-center font-bold border-r border-gray-300">${it.cant}</td>
-                        <td class="p-2 border-r border-gray-300 font-mono text-[10px] uppercase">${it.descripcion}</td>
-                        <td class="p-2 text-right font-bold">$ ${(it.cant * it.precio).toLocaleString('en-US', {minimumFractionDigits:2})}</td>
-                    `;
-                    pTabla.appendChild(tr);
-                });
-            }
-
-            document.getElementById('p-tasa-bcv-view').innerText = `1 USD = ${(d.tasaBcv || 1).toLocaleString('es-VE', {minimumFractionDigits:2})} Bs. (BCV)`;
-            document.getElementById('p-total-usd').innerText = `TOTAL DIVISAS: $ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})}`;
-            document.getElementById('p-total-bs').innerText = `TOTAL EN BS: Bs. ${d.totalBs.toLocaleString('es-VE', {minimumFractionDigits:2})}`;
-
-            if(esFZ) {
-                document.getElementById('p-leyenda-cambiaria').innerText = `THE TOTAL AMOUNT OF THIS PROFORMA IS EXPRESSING IN DIVISAS ($ USD) SETTLED UNDER CURRENCY: ${d.moneda}.`;
-            } else {
-                document.getElementById('p-leyenda-cambiaria').innerText = `EL MONTO TOTAL DE ESTA PROFORMA ES DE $ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})} USD, EQUIVALENTES A Bs. ${d.totalBs.toLocaleString('es-VE', {minimumFractionDigits:2})} PAGADEROS EN BOLÍVARES A LA TASA CAMBIARIA ESTABLECIDA POR EL BANCO CENTRAL DE VENEZUELA (BCV) A LA FECHA DE PAGO EFECTIVO.`;
-            }
-
-            const pctAnticipo = parseInt(d.anticipo) || 100;
-            const pctEntrega = 100 - pctAnticipo;
-            document.getElementById('p-term-moneda').innerHTML = `<strong>2. Moneda Comercial:</strong> ${d.moneda}`;
-            document.getElementById('p-term-pagos').innerHTML = pctEntrega > 0 
-                ? `<strong>4. Condiciones:</strong> ${pctAnticipo}% Anticipado y ${pctEntrega}% contra entrega`
-                : `<strong>4. Condiciones:</strong> 100% Pago Anticipado`;
-
-            window.print();
-        };
-
-        // Inicializar con un renglón por defecto al arrancar
+        // Cargar primera fila vacía por defecto al iniciar la página
         agregarFilaArticulo();
     </script>
 </body>
