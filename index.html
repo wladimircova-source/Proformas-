@@ -3,692 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Presupuestos, Proformas y Notas - COVA</title>
+    <title>Control de Órdenes - Generador de Documentos Comerciales</title>
     <style>
-        body {
-            background-color: #0d1117;
-            color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
+        /* --- ESTILOS GENERALES Y CONFIGURACIÓN --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; color: #333; padding: 20px; }
+        
+        /* Panel de Control (Oculto en Impresión) */
+        .no-print { 
+            background: #ffffff; 
+            padding: 25px; 
+            border-radius: 12px; 
+            max-width: 900px; 
+            margin: 0 auto 30px auto; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e1e4e8;
         }
-        .container { width: 100%; max-width: 1000px; }
-        .text-center { text-align: center; }
-        .flex-col { display: flex; flex-direction: column; align-items: center; }
-        .mb-6 { margin-bottom: 24px; }
-        .mb-4 { margin-bottom: 16px; }
-        .gap-2 { gap: 8px; }
+        .no-print h2 { color: #0056b3; margin-bottom: 20px; font-size: 20px; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
+        .control-group { margin-bottom: 20px; }
+        .control-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #495057; font-size: 14px; }
         
-        h1 { color: #ffffff; font-size: 24px; margin: 0; font-weight: 700; }
-        .back-link { color: #8b949e; font-size: 14px; text-decoration: none; }
-        .back-link:hover { color: #58a6ff; }
-        
-        .card {
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        /* Selectores y Botones de Tipo de Documento */
+        .doc-switcher { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-switch { 
+            flex: 1; padding: 10px; background: #e9ecef; border: 1px solid #ced4da; 
+            border-radius: 6px; cursor: pointer; font-weight: bold; color: #495057; transition: all 0.2s;
         }
-        h2 { color: #ffffff; font-size: 16px; margin-top: 0; margin-bottom: 16px; font-weight: 700; }
+        .btn-switch.active { background: #0056b3; color: white; border-color: #0056b3; }
         
-        .jurisdiccion-selector { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-juris {
-            flex: 1; background-color: #21262d; border: 2px solid #30363d; color: #8b949e;
-            padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;
-            text-transform: uppercase; transition: all 0.2s ease; text-align: center;
+        /* Inputs y Textareas del Formulario */
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 6px; font-size: 14px; background-color: #f8f9fa;
         }
-        .btn-juris.active-ve { background-color: rgba(31, 111, 235, 0.15); border-color: #1f6feb; color: #58a6ff; }
-        .btn-juris.active-fz { background-color: rgba(218, 54, 51, 0.15); border-color: #da3633; color: #ff7b72; }
-
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-        .grid-mix { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
-
-        .bg-box { background-color: rgba(13, 17, 23, 0.4); padding: 12px; border-radius: 6px; border: 1px solid #21262d; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #0056b3; background-color: #fff; }
         
-        label { display: block; font-size: 12px; font-weight: 700; color: #8b949e; margin-bottom: 6px; }
-        .lbl-blue { color: #58a6ff; }
-        .lbl-amber { color: #d29922; }
-        .lbl-green { color: #3fb950; }
-
-        .input-field {
-            width: 100%; background-color: #0d1117; border: 1px solid #30363d;
-            color: #c9d1d9; padding: 8px 12px; border-radius: 6px; box-sizing: border-box; font-size: 14px;
+        .row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .col-3 { flex: 3; } .col-1 { flex: 1; }
+        
+        .btn-main { 
+            background: #28a745; color: white; border: none; padding: 12px 20px; 
+            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; width: 100%; transition: background 0.2s;
         }
-        .input-field:focus { border-color: #58a6ff; outline: none; }
+        .btn-main:hover { background: #218838; }
+        .btn-print { background: #0056b3; margin-top: 15px; }
+        .btn-print:hover { background: #004085; }
 
-        .fila-articulo { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-        .w-cant { width: 80px; text-align: center; font-family: monospace; }
-        .w-flex { flex: 1; text-transform: uppercase; }
-        .w-precio { width: 120px; text-align: right; font-family: monospace; }
+        /* --- LIENZO DEL DOCUMENTO IMPRIMIBLE (ESTILO HOJA BLANCA) --- */
+        .documento-hoja { 
+            background: #ffffff; 
+            max-width: 850px; 
+            min-height: 1100px; 
+            margin: 0 auto; 
+            padding: 50px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border-radius: 4px;
+            position: relative;
+        }
         
-        .btn-remove-row { background: none; border: none; color: #f85149; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .btn-link { background: none; border: none; color: #58a6ff; font-size: 13px; font-weight: 700; cursor: pointer; padding: 0; }
+        /* Encabezado del Documento */
+        .doc-header { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .doc-header td { vertical-align: middle; }
+        .logo-container { width: 180px; }
+        .logo-img { max-width: 180px; max-height: 90px; object-fit: contain; }
+        .doc-title-area { text-align: right; }
+        .doc-title { font-size: 24px; font-weight: 800; color: #1a1a1a; text-transform: uppercase; letter-spacing: 0.5px; }
+        .doc-meta { font-size: 12px; color: #6c757d; margin-top: 5px; line-height: 1.4; }
+
+        /* Tabla Principal de Contenido */
+        .tabla-productos { width: 100%; border-collapse: collapse; margin-top: 25px; margin-bottom: 30px; }
+        .tabla-productos th { 
+            background-color: #f8f9fa; color: #333; font-size: 12px; font-weight: 700; 
+            text-transform: uppercase; padding: 12px 10px; border: 1px solid #dee2e6; letter-spacing: 0.5px;
+        }
+        .tabla-productos td { padding: 12px 10px; border: 1px solid #dee2e6; vertical-align: top; font-size: 14px; }
         
-        .totals-section { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid #21262d; margin-top: 16px; }
-        .total-bs { font-family: monospace; font-weight: 700; color: #d29922; font-size: 16px; }
-        .total-usd { font-size: 24px; font-weight: 900; color: #ffffff; }
-
-        .btn-group { display: flex; gap: 8px; margin-top: 16px; }
-        .btn-submit { flex: 1; background-color: #238636; border: 1px solid #2ea44f; color: #ffffff; font-weight: 700; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
-        .btn-submit:hover { background-color: #2ea44f; }
-        .btn-cancel { background-color: #21262d; border: 1px solid #30363d; color: #c9d1d9; font-weight: 700; padding: 12px; border-radius: 6px; cursor: pointer; display: none; }
-
-        /* Estados y Tags */
-        .badge-status { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
-        .status-pendiente { background-color: rgba(210, 153, 34, 0.15); color: #d29922; border: 1px solid #d29922; }
-        .status-aceptado { background-color: rgba(63, 185, 80, 0.15); color: #3fb950; border: 1px solid #3fb950; }
-
-        /* Historial */
-        .overflow-table { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
-        th { background-color: #161b22; color: #8b949e; padding: 12px; border-bottom: 2px solid #30363d; }
-        td { padding: 12px; border-bottom: 1px solid #21262d; color: #c9d1d9; vertical-align: top; }
-        .td-num { font-family: monospace; font-weight: bold; color: #58a6ff; }
-        .td-total { font-family: monospace; font-weight: bold; color: #3fb950; text-align: right; }
-        .actions-cell { display: flex; flex-direction: column; gap: 6px; align-items: stretch; width: 140px; }
+        /* CORRECCIÓN CRÍTICA: Mantiene los Enters, tabulaciones y viñetas ordenadas */
+        .descripcion-bloque { 
+            white-space: pre-wrap; 
+            word-wrap: break-word;
+            line-height: 1.5; 
+            color: #2c3e50;
+            font-size: 13px;
+        }
         
-        .btn-action { border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; color: white; text-align: center; }
-        .btn-p { background-color: #1f6feb; }
-        .btn-e { background-color: #9e6a03; }
-        .btn-d { background-color: #da3633; }
-        .btn-check { border: none; font-size: 11px; padding: 6px; cursor: pointer; font-weight: bold; border-radius: 4px; text-align: center; color: white; }
+        /* Totales al final de la tabla */
+        .fila-totales td { border: none; padding: 6px 10px; }
+        .txt-right { text-align: right; }
+        .txt-center { text-align: center; }
+        .font-bold { font-weight: bold; }
+        .border-top-double { border-top: 3px double #333 !important; }
 
-        /* IMPRESIÓN */
-        #print-area { display: none; background: white; color: black; padding: 20px; font-size: 12px; }
-        .p-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 16px; }
-        .p-client-box { border: 1px solid #ccc; padding: 8px; background-color: #f9f9f9; border-radius: 4px; margin-top: 8px; max-width: 450px; }
-        .p-badge { background: black; color: white; padding: 2px 6px; font-weight: bold; display: inline-block; font-size: 10px; border-radius: 3px; }
-        .p-badge-fz { background: #da3633; color: white; padding: 2px 6px; font-weight: bold; display: inline-block; font-size: 10px; border-radius: 3px; margin-left: 4px; }
-        .p-num { color: #d9383a; font-family: monospace; font-size: 14px; font-weight: bold; margin: 4px 0; }
-        .p-table { width: 100%; border: 1px solid #ccc; border-collapse: collapse; margin-top: 16px; }
-        .p-table th { background-color: #f0f0f0; color: black; border: 1px solid #ccc; padding: 6px; }
-        .p-table td { border: 1px solid #ccc; padding: 6px; color: black; }
-        .p-footer { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 12px; border-top: 1px solid #ccc; }
-        .p-leyenda { font-size: 9px; color: #555; font-style: italic; max-width: 480px; background: #fafafa; padding: 6px; border: 1px solid #eee; line-height: 1.3; }
+        /* Sección de Notas del Documento */
+        .seccion-notas { margin-top: 40px; border-top: 1px dashed #ced4da; padding-top: 20px; }
+        .notas-title { font-size: 13px; font-weight: 700; color: #495057; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .notas-content { font-size: 12px; line-height: 1.6; color: #4a5568; white-space: pre-wrap; }
 
-        .hidden-element { display: none !important; }
-
+        /* --- CONFIGURACIÓN DE IMPRESIÓN OFICIAL --- */
         @media print {
-            #main-ui { display: none !important; }
-            body { background: white; color: black; padding: 0; }
-            #print-area { display: block !important; }
+            body { background: none; padding: 0; color: #000; }
+            .no-print { display: none !important; }
+            .documento-hoja { box-shadow: none; padding: 0; margin: 0; max-width: 100%; min-height: auto; }
+            @page { size: letter; margin: 1.5cm; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- INTERFAZ PRINCIPAL -->
-        <div id="main-ui">
-            <div class="flex-col mb-6 gap-2 text-center">
-                <h1>📄 Control Comercial y Trazabilidad de Documentos</h1>
-                <a href="index.html" class="back-link">← Volver al Control de Órdenes</a>
+    <!-- ================= PANEL DE CONTROL EDITABLE ================= -->
+    <div class="no-print">
+        <h2>Panel de Configuración de Órdenes</h2>
+        
+        <!-- Alternador de Tipo de Documento -->
+        <div class="control-group">
+            <label>1. Selecciona el Tipo de Documento:</label>
+            <div class="doc-switcher">
+                <button class="btn-switch active" id="btn-presupuesto" onclick="cambiarTipoDoc('PRESUPUESTO')">Presupuesto</button>
+                <button class="btn-switch" id="btn-proforma" onclick="cambiarTipoDoc('FACTURA PROFORMA')">Proforma</button>
+                <button class="btn-switch" id="btn-entrega" onclick="cambiarTipoDoc('NOTA DE ENTREGA')">Nota de Entrega</button>
             </div>
+        </div>
 
-            <!-- Formulario Principal -->
-            <div class="card">
-                <h2 id="form-titulo">Nuevo Documento</h2>
-                
-                <label style="text-align: center; margin-bottom: 8px;">JURISDICCIÓN / ENTORNO COMERCIAL</label>
-                <div class="jurisdiccion-selector">
-                    <button type="button" id="btn-juris-ve" class="btn-juris active-ve">🇲🇪 Nacional (Venezuela)</button>
-                    <button type="button" id="btn-juris-fz" class="btn-juris">✈️ Free Zone (Internacional - FZ)</button>
+        <!-- Cargador de Logo Dinámico -->
+        <div class="control-group">
+            <label for="inputLogo">2. Cargar Logo de la Empresa (Formatos JPG / PNG):</label>
+            <input type="file" id="inputLogo" accept="image/jpeg, image/png" onchange="procesarLogo(this)">
+        </div>
+
+        <!-- Formulario para agregar ítems de forma estructurada -->
+        <div class="control-group">
+            <label>3. Añadir Ítem a la Tabla (Usa 'Enter' en la descripción para estructurar líneas y viñetas):</label>
+            <div class="row">
+                <div class="col-1" style="flex: 0 0 80px;">
+                    <input type="number" id="formCant" value="1" min="1" class="txt-center">
                 </div>
-
-                <form id="doc-form">
-                    <input type="hidden" id="edit_id" value="">
-                    <input type="hidden" id="jurisdiccion_val" value="NACIONAL">
-                    <input type="hidden" id="switch_solo_divisas" value="false">
-                    
-                    <div class="grid-3 mb-4">
-                        <div>
-                            <label>Tipo de Documento</label>
-                            <select id="tipo_doc" class="input-field">
-                                <option value="PRESUPUESTO">PRESUPUESTO (PRE)</option>
-                                <option value="PROFORMA">PROFORMA (PROF)</option>
-                                <option value="NOTA DE ENTREGA">NOTA DE ENTREGA (NE)</option>
-                            </select>
-                        </div>
-                        <div id="wrapper-documento-origen" style="display: none;">
-                            <label class="lbl-blue" id="lbl-doc-origen">Enlazado a Presupuesto</label>
-                            <input type="text" id="doc_origen_ref" placeholder="Ej: PRE-0001" class="input-field" style="text-transform: uppercase; font-family: monospace;">
-                        </div>
-                        <div>
-                            <label>Empresa Emisora</label>
-                            <select id="empresa_emisora" class="input-field">
-                                <option value="SOLUCIONES INTEGRALES 360 F.P.">SOLUCIONES INTEGRALES 360 F.P.</option>
-                                <option value="SECURITY MALLORY 360 C.A.">SECURITY MALLORY 360 C.A.</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Configuración de Divisas / Tasas / Anticipos -->
-                    <div class="grid-3 mb-4 bg-box">
-                        <div>
-                            <label class="lbl-blue">Código O.C. (Visco)</label>
-                            <input type="text" id="orden_compra" placeholder="Ej: 006059/2026" class="input-field" style="text-transform: uppercase; font-family: monospace;">
-                        </div>
-                        <div id="wrapper-tasa-bcv">
-                            <label class="lbl-amber">Tasa Oficial (BCV)</label>
-                            <input type="number" step="0.01" id="tasa_bcv" value="1.00" required class="input-field text-center" style="font-weight: bold; color: #fff; font-family: monospace;">
-                        </div>
-                        <div id="wrapper-anticipo" style="display: none;">
-                            <label class="lbl-green">Condición de Pago / Anticipo</label>
-                            <select id="porcentaje_anticipo" class="input-field" style="color: #3fb950; font-weight: bold;">
-                                <option value="100">Pago 100% Total</option>
-                                <option value="90">Anticipo 90%</option>
-                                <option value="80">Anticipo 80%</option>
-                                <option value="70">Anticipo 70%</option>
-                                <option value="50">Anticipo 50%</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grid-mix mb-4">
-                        <div>
-                            <label>Cliente / Empresa Compradora</label>
-                            <input type="text" id="cliente_doc" required placeholder="Ej: VISCO ORINOCO, C.A." class="input-field">
-                        </div>
-                        <div>
-                            <label>RIF o ID Registro</label>
-                            <input type="text" id="rif_doc" placeholder="Ej: J-50438419-4" class="input-field" style="text-transform: uppercase;">
-                        </div>
-                    </div>
-
-                    <!-- Artículos Dinámicos -->
-                    <div class="mb-4">
-                        <label>Artículos / Servicios</label>
-                        <div id="contenedor-filas"></div>
-                        <button type="button" id="btn-add-fila" class="btn-link">+ Añadir fila</button>
-                    </div>
-
-                    <!-- Sección de Cierre de Montos -->
-                    <div class="totals-section">
-                        <div id="ui-box-bs">
-                            <label>Equivalencia Cambiaria Estimada:</label>
-                            <span id="total-bs-view" class="total-bs">Bs. 0,00</span>
-                        </div>
-                        <div style="text-align: right; flex: 1;">
-                            <label>Total Documento:</label>
-                            <span id="total-global-view" class="total-usd">$ 0.00</span>
-                        </div>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="button" id="btn-cancelar" class="btn-cancel">Cancelar</button>
-                        <button type="submit" class="btn-submit">GENERAR DOCUMENTO</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Historial Tabla -->
-            <div class="card">
-                <h2>Historial Comercial de Emitidos</h2>
-                <div class="overflow-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Identificador</th>
-                                <th>Tipo / Flujo</th>
-                                <th>Cliente / Nexo</th>
-                                <th>Estado</th>
-                                <th style="text-align: right;">Monto</th>
-                                <th style="text-align: center;">Gestión</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-documentos"></tbody>
-                    </table>
+                <div class="col-3">
+                    <textarea id="formDesc" rows="4" placeholder="ESCÁNER VOLUMÉTRICO WLSR&#10;• Precisión típica de +/- 1% o superior.&#10;• El kit incluye: (2) Escáneres láser LMS511."></textarea>
+                </div>
+                <div class="col-1" style="flex: 0 0 150px;">
+                    <input type="text" id="formPrecio" value="96375.00" placeholder="Precio Unitario ($)">
+                </div>
+                <div class="col-1" style="flex: 0 0 120px;">
+                    <button class="btn-main" onclick="insertarFilaATabla()" style="height: 100%;">Agregar</button>
                 </div>
             </div>
         </div>
 
-        <!-- ÁREA IMPRESIÓN -->
-        <div id="print-area">
-            <div class="p-header">
-                <div>
-                    <h1 style="color: black; font-size: 22px; font-weight: 900;" id="p-empresa-emisora">EMPRESA</h1>
-                    <p style="margin:2px 0; color:#555; font-family: monospace; font-size: 10px;">Servicios y Operaciones Integrales de Redes y Suministros</p>
-                    <div class="p-client-box">
-                        <p style="margin: 0 0 4px 0; font-size: 9px; font-weight: bold; color: #444;">CLIENTE / EMPRESA COMPRADORA:</p>
-                        <p id="p-cliente-nombre" style="margin:0; font-family: monospace; font-weight: bold; font-size: 13px; text-transform: uppercase;"></p>
-                        <p id="p-cliente-rif" style="margin: 4px 0 0 0; font-family: monospace;"></p>
-                    </div>
-                </div>
-                <div style="text-align: right;">
-                    <span id="p-badge-tipo" class="p-badge">PRESUPUESTO</span>
-                    <span id="p-badge-fz" class="p-badge-fz hidden-element">FREE ZONE</span>
-                    <div id="p-numero-doc" class="p-num">PRE-0000</div>
-                    <p style="margin:2px 0; font-weight: bold;" id="p-orden-compra">O.C: --</p>
-                    <p style="margin:2px 0; font-weight: bold; color:#1f6feb; font-size:11px;" id="p-nexo-origen"></p>
-                    <p style="margin:2px 0; color:#666;" id="p-fecha-emision">Fecha: --/--/----</p>
-                    <div id="p-box-tasa-bcv" style="margin-top: 6px; border: 1px solid #d29922; background: #fffdf5; padding: 4px; font-size: 10px; font-family: monospace; border-radius: 4px;">
-                        <span id="p-tasa-bcv-view" style="font-weight: bold;">1 USD = 0,00 Bs. (BCV)</span>
-                    </div>
-                </div>
-            </div>
-
-            <table class="p-table">
-                <thead>
-                    <tr>
-                        <th style="width: 60px; text-align: center;">CANT.</th>
-                        <th style="text-align: left;">DESCRIPCIÓN DE LOS ARTÍCULOS / SERVICIOS</th>
-                        <th style="width: 120px; text-align: right;">TOTAL ($)</th>
-                    </tr>
-                </thead>
-                <tbody id="p-tabla-items"></tbody>
-            </table>
-
-            <div class="p-footer">
-                <div>
-                    <p id="p-leyenda-cambiaria" class="p-leyenda"></p>
-                </div>
-                <div style="text-align: right; min-width: 250px;">
-                    <p style="margin: 0; font-size: 12px; color:#555;" id="p-subtotal-usd">Total Contrato: $ 0.00</p>
-                    <p style="margin: 2px 0; font-size: 14px; font-weight: bold; color: #1e7e34;" id="p-anticipo-usd">Monto Anticipo (--%): $ 0.00</p>
-                    <p style="margin: 4px 0 0 0; font-size: 14px; font-weight: 900; color: #b97503;" id="p-total-bs"></p>
-                </div>
-            </div>
-            
-            <div style="margin-top: 50px; width: 180px; text-align: center; border-top: 1px solid black; padding-top: 4px; font-weight: bold; font-size: 10px;">
-                Atentamente,<br>Wladimir Cova
-            </div>
+        <!-- Control de Notas Dinámicas -->
+        <div class="control-group">
+            <label for="formNotas">4. Notas, Condiciones Comerciales o Cláusulas del Documento:</label>
+            <textarea id="formNotas" rows="3" placeholder="Ej. Tiempo de entrega: 6 semanas.&#10;Forma de pago: 70% anticipo.&#10;Precios no incluyen impuestos ni gastos de nacionalización." oninput="renderizarNotas()"></textarea>
         </div>
+
+        <button class="btn-main btn-print" onclick="window.print()">Imprimir / Guardar en PDF</button>
     </div>
 
+
+    <!-- ================= HOJA DE IMPRESIÓN FINAL ================= -->
+    <div class="documento-hoja">
+        
+        <!-- Encabezado de la Empresa Emisora -->
+        <table class="doc-header">
+            <tr>
+                <td class="logo-container">
+                    <!-- Contenedor del Logo. Si no hay cargado, muestra un recuadro limpio por defecto -->
+                    <img id="imgLogoRender" class="logo-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='70'><rect width='180' height='70' style='fill:%23f8f9fa;stroke:%23e1e4e8;stroke-width:1'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='11' fill='%23a0aec0'>[ Cargar Logo ]</text></svg>" alt="Logo Corporativo">
+                </td>
+                <td class="doc-title-area">
+                    <div class="doc-title" id="lblTipoDocumento">PRESUPUESTO</div>
+                    <div class="doc-meta">
+                        <strong>Documento N°:</strong> <span id="lblDocNum">004812</span><br>
+                        <strong>Fecha Emisión:</strong> <span id="lblDocFecha">2026-07-05</span><br>
+                        <strong>Cliente:</strong> Visco Orinoco, C.A.
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Tabla Estructurada de Artículos/Servicios -->
+        <table class="tabla-productos">
+            <thead>
+                <tr>
+                    <th style="width: 10%;" class="txt-center">Cant.</th>
+                    <th style="width: 70%;">Descripción de los Artículos / Servicios</th>
+                    <th style="width: 20%;" class="txt-right">Total ($)</th>
+                </tr>
+            </thead>
+            <tbody id="tablaCuerpoItems">
+                <!-- Ítem Inicial de demostración técnica -->
+                <tr>
+                    <td class="txt-center font-bold">1</td>
+                    <td>
+                        <div class="descripcion-bloque">ESCÁNER VOLUMÉTRICO WLSR
+• PRECISIÓN TÍPICA DE +/- 1% O SUPERIOR / ESCANEO DINÁMICO.
+• SISTEMA DE EMISIÓN DE TICKETS INTEGRADO / IMÁGENES GRÁFICAS EN 2D.
+• EL KIT INCLUYE:
+  - (2) Escáneres láser LMS511
+  - Cubierta de montaje y caja de control de alimentación
+  - PC industrial Payload Pro-R con monitor, teclado y ratón</div>
+                    </td>
+                    <td class="txt-right font-bold">$ 96,375.00</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <!-- Cálculos automáticos de pie de tabla -->
+                <tr class="fila-totales">
+                    <td></td>
+                    <td class="txt-right font-bold" style="padding-top: 20px;">Sub-Total:</td>
+                    <td class="txt-right font-bold style-total" style="padding-top: 20px;" id="valSubTotal">$ 96,375.00</td>
+                </tr>
+                <tr class="fila-totales">
+                    <td></td>
+                    <td class="txt-right font-bold">Total General ($):</td>
+                    <td class="txt-right font-bold border-top-double" style="font-size: 16px; color: #111;" id="valTotalGeneral">$ 96,375.00</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Sección de Notas y Cláusulas al Final de la Hoja -->
+        <div class="seccion-notas" id="contenedorBloqueNotas" style="display: none;">
+            <div class="notas-title">NOTAS Y CONDICIONES COMERCIALES:</div>
+            <div class="notas-content" id="lblNotasRender"></div>
+        </div>
+
+    </div>
+
+    <!-- ================= CONTROL DE LÓGICA LOGÍSTICA (JS) ================= -->
     <script>
-        let listaDocumentos = JSON.parse(localStorage.getItem('documentos_cova_local')) || [];
-        let totalCalculadoUSD = 0;
+        // Almacén global de montos para el cálculo automático
+        let acumuladoSubTotal = 96375.00;
 
-        const btnJurisVe = document.getElementById('btn-juris-ve');
-        const btnJurisFz = document.getElementById('btn-juris-fz');
-        const hiddenJuris = document.getElementById('jurisdiccion_val');
-        const hiddenSoloDivisas = document.getElementById('switch_solo_divisas');
-        const selectTipoDoc = document.getElementById('tipo_doc');
-        const wrapperDocOrigen = document.getElementById('wrapper-documento-origen');
-        const lblDocOrigen = document.getElementById('lbl-doc-origen');
-        const selectAnticipo = document.getElementById('porcentaje_anticipo');
-        const wrapperAnticipo = document.getElementById('wrapper-anticipo');
-
-        selectTipoDoc.addEventListener('change', actualizarCamposFlujo);
-
-        function actualizarCamposFlujo() {
-            const tipo = selectTipoDoc.value;
-            if (tipo === 'PRESUPUESTO') {
-                wrapperDocOrigen.style.display = 'none';
-                wrapperAnticipo.style.display = 'none';
-            } else if (tipo === 'PROFORMA') {
-                wrapperDocOrigen.style.display = 'block';
-                lblDocOrigen.innerText = "Enlazado a Presupuesto N°";
-                wrapperAnticipo.style.display = 'block';
-            } else if (tipo === 'NOTA DE ENTREGA') {
-                wrapperDocOrigen.style.display = 'block';
-                lblDocOrigen.innerText = "Enlazado a Proforma N°";
-                wrapperAnticipo.style.display = 'none';
-            }
-        }
-
-        btnJurisVe.addEventListener('click', () => cambiarEntornoJurisdiccion('NACIONAL'));
-        btnJurisFz.addEventListener('click', () => cambiarEntornoJurisdiccion('FREE_ZONE'));
-
-        function cambiarEntornoJurisdiccion(modo) {
-            hiddenJuris.value = modo;
-            if (modo === 'FREE_ZONE') {
-                btnJurisFz.classList.add('active-fz');
-                btnJurisVe.classList.remove('active-ve');
-                hiddenSoloDivisas.value = "true";
-                dispararEfectoSoloDivisas(true);
-            } else {
-                btnJurisVe.classList.add('active-ve');
-                btnJurisFz.classList.remove('active-fz');
-                hiddenSoloDivisas.value = "false";
-                dispararEfectoSoloDivisas(false);
-            }
-        }
-
-        function dispararEfectoSoloDivisas(ocultar) {
-            const wrapperTasa = document.getElementById('wrapper-tasa-bcv');
-            const boxUiBs = document.getElementById('ui-box-bs');
-            const inputTasa = document.getElementById('tasa_bcv');
+        // 1. Cambiar el tipo de documento (Presupuesto / Proforma / Nota de Entrega)
+        function cambiarTipoDoc(tipo) {
+            // Actualizar etiqueta del documento
+            document.getElementById('lblTipoDocumento').innerText = tipo;
             
-            if (ocultar) {
-                wrapperTasa.style.display = 'none';
-                boxUiBs.style.display = 'none';
-                inputTasa.required = false;
-                inputTasa.value = "0";
-            } else {
-                wrapperTasa.style.display = 'block';
-                boxUiBs.style.display = 'block';
-                inputTasa.required = true;
-                if(inputTasa.value == "0") inputTasa.value = "1.00";
-            }
-            calcularTotalGlobal();
-        }
-
-        function agregarFilaArticulo(cant = '', desc = '', precio = '') {
-            const contenedor = document.getElementById('contenedor-filas');
-            const div = document.createElement('div');
-            div.className = "fila-articulo";
-            div.innerHTML = `
-                <input type="number" placeholder="Cant" value="${cant}" required class="input-field w-cant item-cant">
-                <input type="text" placeholder="Descripción del artículo" value="${desc}" required class="input-field w-flex item-desc">
-                <input type="number" step="0.01" placeholder="Precio $" value="${precio}" required class="input-field w-precio item-precio">
-                <button type="button" class="btn-remove-row">✕</button>
-            `;
-            div.querySelector('.item-cant').addEventListener('input', calcularTotalGlobal);
-            div.querySelector('.item-precio').addEventListener('input', calcularTotalGlobal);
-            div.querySelector('.btn-remove-row').addEventListener('click', function() {
-                div.remove();
-                calcularTotalGlobal();
-            });
-            contenedor.appendChild(div);
-            calcularTotalGlobal();
-        }
-
-        function calcularTotalGlobal() {
-            let total = 0;
-            document.querySelectorAll('.fila-articulo').forEach(f => {
-                const c = parseFloat(f.querySelector('.item-cant').value) || 0;
-                const p = parseFloat(f.querySelector('.item-precio').value) || 0;
-                total += (c * p);
-            });
-            totalCalculadoUSD = total;
-            document.getElementById('total-global-view').innerText = `$ ${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-            const tasa = parseFloat(document.getElementById('tasa_bcv').value) || 0;
-            document.getElementById('total-bs-view').innerText = `Bs. ${(total * tasa).toLocaleString('es-VE', {minimumFractionDigits: 2})}`;
-        }
-
-        document.getElementById('btn-add-fila').addEventListener('click', () => agregarFilaArticulo());
-        document.getElementById('tasa_bcv').addEventListener('input', calcularTotalGlobal);
-
-        document.getElementById('doc-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const editId = document.getElementById('edit_id').value;
-            const tipo = selectTipoDoc.value;
-            const juris = hiddenJuris.value;
-            const items = [];
+            // Alternar clases visuales en los botones del panel de control
+            document.querySelectorAll('.btn-switch').forEach(btn => btn.classList.remove('active'));
             
-            document.querySelectorAll('.fila-articulo').forEach(f => {
-                items.push({
-                    cant: parseFloat(f.querySelector('.item-cant').value) || 0,
-                    descripcion: f.querySelector('.item-desc').value.toUpperCase(),
-                    precio: parseFloat(f.querySelector('.item-precio').value) || 0
-                });
-            });
+            if (tipo === 'PRESUPUESTO') document.getElementById('btn-presupuesto').classList.add('active');
+            if (tipo === 'FACTURA PROFORMA') document.getElementById('btn-proforma').classList.add('active');
+            if (tipo === 'NOTA DE ENTREGA') document.getElementById('btn-entrega').classList.add('active');
+        }
 
-            if (items.length === 0) {
-                alert("Debes añadir al menos un artículo.");
+        // 2. Procesar el archivo JPG/PNG local y transformarlo a Base64
+        function procesarLogo(input) {
+            if (input.files && input.files[0]) {
+                const lector Archivo = new FileReader();
+                lectorArchivo.onload = function(e) {
+                    // Reemplaza el origen de la imagen en la hoja imprimible por la cadena binaria
+                    document.getElementById('imgLogoRender').src = e.target.result;
+                };
+                lectorArchivo.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 3. Insertar filas a la tabla manteniendo el formateo multilínea
+        function insertarFilaATabla() {
+            const campoCant = document.getElementById('formCant').value;
+            const campoDesc = document.getElementById('formDesc').value;
+            const campoPrecio = parseFloat(document.getElementById('formPrecio').value);
+
+            if (!campoDesc.trim() || isNaN(campoPrecio)) {
+                alert("Por favor rellene la descripción y coloque un precio numérico válido.");
                 return;
             }
 
-            const dataObj = {
-                tipo: tipo,
-                jurisdiccion: juris,
-                tasaBcv: parseFloat(document.getElementById('tasa_bcv').value) || 0,
-                soloDivisas: (hiddenSoloDivisas.value === "true"),
-                ordenCompra: document.getElementById('orden_compra').value.toUpperCase() || 'N/A',
-                docOrigen: document.getElementById('doc_origen_ref').value.toUpperCase() || 'N/A',
-                porcentajeAnticipo: parseInt(selectAnticipo.value) || 100,
-                empresaEmisora: document.getElementById('empresa_emisora').value,
-                cliente: document.getElementById('cliente_doc').value.toUpperCase(),
-                rif: document.getElementById('rif_doc').value.toUpperCase() || 'N/A',
-                items: items,
-                total: totalCalculadoUSD,
-                estado: 'PENDIENTE'
-            };
+            const totalItem = campoCant * campoPrecio;
+            acumuladoSubTotal += totalItem;
 
-            if (editId) {
-                const index = listaDocumentos.findIndex(d => d.id === editId);
-                if (index !== -1) {
-                    dataObj.id = editId;
-                    dataObj.numeroDocumento = listaDocumentos[index].numeroDocumento;
-                    dataObj.fecha = listaDocumentos[index].fecha;
-                    dataObj.estado = listaDocumentos[index].estado;
-                    listaDocumentos[index] = dataObj;
-                }
-                cancelarEdicion();
+            const cuerpoTabla = document.getElementById('tablaCuerpoItems');
+            const filaNueva = document.createElement('tr');
+
+            // Formateador de moneda local/internacional
+            const formatearMoneda = (valor) => "$ " + valor.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            filaNueva.innerHTML = `
+                <td class="txt-center font-bold">${campoCant}</td>
+                <td><div class="descripcion-bloque">${campoDesc}</div></td>
+                <td class="txt-right font-bold">${formatearMoneda(totalItem)}</td>
+            `;
+
+            cuerpoTabla.appendChild(filaNueva);
+
+            // Actualizar bloques de totales automáticamente
+            document.getElementById('valSubTotal').innerText = formatearMoneda(acumuladoSubTotal);
+            document.getElementById('valTotalGeneral').innerText = formatearMoneda(acumuladoSubTotal);
+
+            // Limpiar inputs del panel para la siguiente entrada
+            document.getElementById('formDesc').value = "";
+            document.getElementById('formPrecio').value = "";
+        }
+
+        // 4. Renderizar la sección de observaciones o notas dinámicas
+        function renderizarNotas() {
+            const contenido = document.getElementById('formNotas').value;
+            const panelNotas = document.getElementById('contenedorBloqueNotas');
+            const textoNotas = document.getElementById('lblNotasRender');
+
+            if (!contenido.trim()) {
+                panelNotas.style.display = "none";
             } else {
-                const totalDeEsteTipo = listaDocumentos.filter(d => d.tipo === tipo).length;
-                let prefijo = tipo === "PROFORMA" ? "PROF" : (tipo === "NOTA DE ENTREGA" ? "NE" : "PRE");
-                
-                dataObj.id = 'ID-' + Date.now();
-                dataObj.numeroDocumento = `${prefijo}-${(totalDeEsteTipo + 1).toString().padStart(4, '0')}`;
-                dataObj.fecha = new Date().toLocaleDateString('es-ES');
-                listaDocumentos.unshift(dataObj);
-            }
-
-            localStorage.setItem('documentos_cova_local', JSON.stringify(listaDocumentos));
-            this.reset();
-            document.getElementById('doc_origen_ref').value = "";
-            cambiarEntornoJurisdiccion('NACIONAL');
-            document.getElementById('contenedor-filas').innerHTML = "";
-            actualizarCamposFlujo();
-            agregarFilaArticulo();
-            renderTablaDocs();
-        });
-
-        function renderTablaDocs() {
-            const tbody = document.getElementById('tabla-documentos');
-            tbody.innerHTML = "";
-
-            listaDocumentos.forEach(d => {
-                const tagJuris = d.jurisdiccion === 'FREE_ZONE' ? '<span style="background:#da3633; color:white; padding:2px 4px; font-size:10px; border-radius:3px;">FZ</span>' : '<span style="background:#1f6feb; color:white; padding:2px 4px; font-size:10px; border-radius:3px;">VE</span>';
-                const nexoText = d.docOrigen && d.docOrigen !== 'N/A' ? `<br><span style="color:#58a6ff; font-size:11px;">Vínculo: ${d.docOrigen}</span>` : '';
-                const condPagoText = d.tipo === 'PROFORMA' ? `<br><span style="color:#3fb950; font-size:11px;">Cobro: ${d.porcentajeAnticipo}%</span>` : '';
-                
-                let badgeEstado = `<span class="badge-status status-pendiente">PENDIENTE</span>`;
-                if (d.estado === 'ACEPTADO') badgeEstado = `<span class="badge-status status-aceptado">ACEPTADO ✅</span>`;
-
-                let btnFlujoRapido = '';
-                if (d.tipo === 'PRESUPUESTO' && d.estado === 'PENDIENTE') {
-                    btnFlujoRapido = `<button type="button" class="btn-check" style="background-color: #238636;" onclick="cambiarEstadoDoc('${d.id}', 'ACEPTADO')">✔️ Aprobar</button>`;
-                } else if (d.tipo === 'PRESUPUESTO' && d.estado === 'ACEPTADO') {
-                    btnFlujoRapido = `<button type="button" class="btn-check" style="background:#85e89d; color:#032f11;" onclick="convertirPresupuestoAProforma('${d.id}')">➡️ Convertir a Prof</button>`;
-                } else if (d.tipo === 'PROFORMA') {
-                    btnFlujoRapido = `<button type="button" class="btn-check" style="background:#f1e05a; color:black;" onclick="convertirProformaANota('${d.id}')">📦 Crear N.E.</button>`;
-                }
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="td-num">${d.numeroDocumento}</td>
-                    <td><div style="font-weight:bold; font-size:11px; margin-bottom:4px;">${d.tipo}</div>${tagJuris}</td>
-                    <td><strong>${d.cliente}</strong><br><span style="color:#8b949e; font-size:11px;">O.C: ${d.ordenCompra}</span>${nexoText}${condPagoText}</td>
-                    <td>${badgeEstado}</td>
-                    <td class="td-total">$ ${d.total.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
-                    <td class="actions-cell">
-                        ${btnFlujoRapido}
-                        <button type="button" onclick="abrirVisorImpresion('${d.id}')" class="btn-action btn-p">🖨️ Ver</button>
-                        <button type="button" onclick="cargarFormEdicion('${d.id}')" class="btn-action btn-e">✏️</button>
-                        <button type="button" onclick="borrarRegistro('${d.id}')" class="btn-action btn-d">🗑️</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function cambiarEstadoDoc(id, nuevoEstado) {
-            const index = listaDocumentos.findIndex(d => d.id === id);
-            if (index !== -1) {
-                listaDocumentos[index].estado = nuevoEstado;
-                localStorage.setItem('documentos_cova_local', JSON.stringify(listaDocumentos));
-                renderTablaDocs();
+                panelNotas.style.display = "block";
+                textoNotas.innerText = contenido; // Respeta las sangrías y saltos nativos
             }
         }
-
-        function convertirPresupuestoAProforma(id) {
-            const d = listaDocumentos.find(doc => doc.id === id);
-            if (!d) return;
-            
-            selectTipoDoc.value = 'PROFORMA';
-            actualizarCamposFlujo();
-            document.getElementById('doc_origen_ref').value = d.numeroDocumento;
-            document.getElementById('cliente_doc').value = d.cliente;
-            document.getElementById('rif_doc').value = d.rif;
-            document.getElementById('orden_compra').value = d.ordenCompra !== 'N/A' ? d.ordenCompra : '';
-            cambiarEntornoJurisdiccion(d.jurisdiccion);
-            
-            document.getElementById('contenedor-filas').innerHTML = "";
-            d.items.forEach(it => agregarFilaArticulo(it.cant, it.descripcion, it.precio));
-            
-            document.getElementById('form-titulo').innerText = `Proforma basada en ${d.numeroDocumento}`;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function convertirProformaANota(id) {
-            const d = listaDocumentos.find(doc => doc.id === id);
-            if (!d) return;
-
-            selectTipoDoc.value = 'NOTA DE ENTREGA';
-            actualizarCamposFlujo();
-            document.getElementById('doc_origen_ref').value = d.numeroDocumento;
-            document.getElementById('cliente_doc').value = d.cliente;
-            document.getElementById('rif_doc').value = d.rif;
-            document.getElementById('orden_compra').value = d.ordenCompra !== 'N/A' ? d.ordenCompra : '';
-            cambiarEntornoJurisdiccion(d.jurisdiccion);
-
-            document.getElementById('contenedor-filas').innerHTML = "";
-            d.items.forEach(it => agregarFilaArticulo(it.cant, it.descripcion, it.precio));
-
-            document.getElementById('form-titulo').innerText = `Nota de Entrega basada en ${d.numeroDocumento}`;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function cargarFormEdicion(id) {
-            const d = listaDocumentos.find(doc => doc.id === id);
-            if(!d) return;
-
-            document.getElementById('edit_id').value = d.id;
-            selectTipoDoc.value = d.tipo;
-            actualizarCamposFlujo();
-            
-            document.getElementById('doc_origen_ref').value = d.docOrigen && d.docOrigen !== 'N/A' ? d.docOrigen : '';
-            selectAnticipo.value = d.porcentajeAnticipo || 100;
-            
-            cambiarEntornoJurisdiccion(d.jurisdiccion || 'NACIONAL');
-            document.getElementById('orden_compra').value = d.ordenCompra !== 'N/A' ? d.ordenCompra : '';
-            document.getElementById('empresa_emisora').value = d.empresaEmisora;
-            document.getElementById('cliente_doc').value = d.cliente;
-            document.getElementById('rif_doc').value = d.rif;
-
-            if (d.jurisdiccion !== 'FREE_ZONE') {
-                document.getElementById('tasa_bcv').value = d.tasaBcv || '1.00';
-            }
-
-            document.getElementById('contenedor-filas').innerHTML = "";
-            d.items.forEach(it => agregarFilaArticulo(it.cant, it.descripcion, it.precio));
-
-            document.getElementById('form-titulo').innerText = `✏️ Editando: ${d.numeroDocumento}`;
-            document.getElementById('btn-cancelar').style.display = 'inline-block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function borrarRegistro(id) {
-            if(confirm("⚠️ ¿Deseas eliminar este registro?")) {
-                listaDocumentos = listaDocumentos.filter(d => d.id !== id);
-                localStorage.setItem('documentos_cova_local', JSON.stringify(listaDocumentos));
-                renderTablaDocs();
-            }
-        }
-
-        function cancelarEdicion() {
-            document.getElementById('edit_id').value = "";
-            document.getElementById('doc-form').reset();
-            document.getElementById('doc_origen_ref').value = "";
-            cambiarEntornoJurisdiccion('NACIONAL');
-            document.getElementById('contenedor-filas').innerHTML = "";
-            document.getElementById('form-titulo').innerText = "Nuevo Documento";
-            document.getElementById('btn-cancelar').style.display = 'none';
-            actualizarCamposFlujo();
-            agregarFilaArticulo();
-        }
-        document.getElementById('btn-cancelar').addEventListener('click', cancelarEdicion);
-
-        function abrirVisorImpresion(id) {
-            const d = listaDocumentos.find(doc => doc.id === id);
-            if(!d) return;
-
-            document.getElementById('p-empresa-emisora').innerText = d.empresaEmisora;
-            document.getElementById('p-numero-doc').innerText = d.numeroDocumento;
-            document.getElementById('p-badge-tipo').innerText = d.tipo;
-            document.getElementById('p-orden-compra').innerText = `O.C: ${d.ordenCompra}`;
-            document.getElementById('p-fecha-emision').innerText = `Fecha: ${d.fecha}`;
-            document.getElementById('p-cliente-nombre').innerText = d.cliente;
-            document.getElementById('p-cliente-rif').innerHTML = `<strong>ID / REGISTRO:</strong> ${d.rif}`;
-
-            const pNexo = document.getElementById('p-nexo-origen');
-            if(d.docOrigen && d.docOrigen !== 'N/A') {
-                pNexo.innerText = d.tipo === 'PROFORMA' ? `Ref. Presupuesto: ${d.docOrigen}` : `Ref. Proforma: ${d.docOrigen}`;
-                pNexo.style.display = 'block';
-            } else {
-                pNexo.style.display = 'none';
-            }
-
-            const pTabla = document.getElementById('p-tabla-items');
-            pTabla.innerHTML = "";
-            d.items.forEach(it => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="text-align:center; font-weight:bold;">${it.cant}</td>
-                    <td style="font-family:monospace; text-transform:uppercase;">${it.descripcion}</td>
-                    <td style="text-align:right; font-weight:bold;">$ ${(it.cant * it.precio).toLocaleString('en-US', {minimumFractionDigits:2})}</td>
-                `;
-                pTabla.appendChild(tr);
-            });
-
-            const badgeFzPrint = document.getElementById('p-badge-fz');
-            const boxTasaPrint = document.getElementById('p-box-tasa-bcv');
-            const totalBsPrint = document.getElementById('p-total-bs');
-            const leyendaPrint = document.getElementById('p-leyenda-cambiaria');
-            
-            const subtotalUsd = d.total;
-            const pct = d.porcentajeAnticipo || 100;
-            const montoAnticipoUsd = (subtotalUsd * pct) / 100;
-
-            document.getElementById('p-subtotal-usd').innerText = `Monto Total Contrato: $ ${subtotalUsd.toLocaleString('en-US', {minimumFractionDigits:2})}`;
-            
-            if(pct < 100 && d.tipo === 'PROFORMA') {
-                document.getElementById('p-anticipo-usd').innerText = `MONTO EXIGIBLE (${pct}%): $ ${montoAnticipoUsd.toLocaleString('en-US', {minimumFractionDigits:2})}`;
-                document.getElementById('p-anticipo-usd').style.display = 'block';
-            } else {
-                document.getElementById('p-anticipo-usd').innerText = `MONTO NETO A PAGAR: $ ${subtotalUsd.toLocaleString('en-US', {minimumFractionDigits:2})}`;
-            }
-
-            if (d.jurisdiccion === 'FREE_ZONE') {
-                badgeFzPrint.classList.remove('hidden-element');
-                boxTasaPrint.classList.add('hidden-element');
-                totalBsPrint.classList.add('hidden-element');
-                leyendaPrint.innerText = `FREE ZONE TRANSACTION TERMS: THIS OPERATIONAL ACQUISITION IS ASSIGNED DIRECTLY TO INTERNATIONAL PROTOCOLS. THE CONTRACTUAL VALUE OF $ ${montoAnticipoUsd.toLocaleString('en-US', {minimumFractionDigits:2})} USD (${pct}%) IS SUBJECT TO EXCLUSIVE SETTLEMENT IN FOREIGN CURRENCY DIRECTLY VIA TRANS-BORDER SETTLEMENT RULES.`;
-            } else {
-                badgeFzPrint.classList.add('hidden-element');
-                if (d.soloDivisas) {
-                    boxTasaPrint.classList.add('hidden-element');
-                    totalBsPrint.classList.add('hidden-element');
-                    leyendaPrint.innerText = `TERMINOS DE TRANSFERENCIA: EL VALOR DE ESTA ADQUISICIÓN SE ENCUENTRA SUJETO A LIQUIDACIÓN EXCLUSIVA Y DIRECTA EN DIVISAS DE ACUERDO A LOS PROTOCOLOS COMERCIALES ESTABLECIDOS ENTRE LAS PARTES.`;
-                } else {
-                    boxTasaPrint.classList.remove('hidden-element');
-                    totalBsPrint.classList.remove('hidden-element');
-                    
-                    const tasa = d.tasaBcv || 1;
-                    const totalBsAnticipo = montoAnticipoUsd * tasa;
-                    
-                    document.getElementById('p-tasa-bcv-view').innerText = `1 USD = ${tasa.toLocaleString('es-VE', {minimumFractionDigits:2})} Bs. (BCV)`;
-                    totalBsPrint.innerText = `TOTAL EN BS (${pct}%): Bs. ${totalBsAnticipo.toLocaleString('es-VE', {minimumFractionDigits:2})}`;
-                    
-                    leyendaPrint.innerText = `EL MONTO TOTAL DEL CONTRATO ES DE $ ${subtotalUsd.toLocaleString('en-US', {minimumFractionDigits:2})} USD. PARA ESTA EMISIÓN SE LIQUIDA EL ${pct}%, EQUIVALENTE A $ ${montoAnticipoUsd.toLocaleString('en-US', {minimumFractionDigits:2})} USD, PAGADEROS EN BOLÍVARES A UN EQUIVALENTE DE Bs. ${totalBsAnticipo.toLocaleString('es-VE', {minimumFractionDigits:2})} A LA TASA CAMBIARIA OFICIAL DEL BANCO CENTRAL DE VENEZUELA (BCV) VIGENTE A LA FECHA DEL PAGO EFECTIVO.`;
-                }
-            }
-
-            window.print();
-        }
-
-        // Ejecución inicial limpia
-        actualizarCamposFlujo();
-        agregarFilaArticulo();
-        renderTablaDocs();
     </script>
 </body>
 </html>
