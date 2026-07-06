@@ -109,7 +109,7 @@
         .p-table th { background-color: #f0f0f0; color: black; border: 1px solid #ccc; padding: 6px; }
         .p-table td { border: 1px solid #ccc; padding: 6px; color: black; vertical-align: top; }
         
-        /* CORRECCIÓN DE TEXTO PEGADO: Respeta los enters y viñetas */
+        /* CORRECCIÓN DE TEXTO PEGADO */
         .p-descripcion-bloque {
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -323,7 +323,7 @@
     <script>
         let listaDocumentos = JSON.parse(localStorage.getItem('documentos_cova_local')) || [];
         let totalCalculadoUSD = 0;
-        let base64LogoData = ""; // Guarda la variable binaria del logo cargado
+        let base64LogoData = ""; 
 
         const btnJurisVe = document.getElementById('btn-juris-ve');
         const btnJurisFz = document.getElementById('btn-juris-fz');
@@ -338,7 +338,6 @@
 
         selectTipoDoc.addEventListener('change', actualizarCamposFlujo);
 
-        // Escucha la carga del archivo de Logo y lo convierte a Base64
         inputLogoFile.addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
@@ -402,7 +401,6 @@
             calcularTotalGlobal();
         }
 
-        // Se cambió el input de descripción a un <textarea> para capturar saltos de línea sin problemas
         function agregarFilaArticulo(cant = '', desc = '', precio = '') {
             const contenedor = document.getElementById('contenedor-filas');
             const div = document.createElement('div');
@@ -449,7 +447,7 @@
             document.querySelectorAll('.fila-articulo').forEach(f => {
                 items.push({
                     cant: parseFloat(f.querySelector('.item-cant').value) || 0,
-                    descripcion: f.querySelector('.item-desc').value, // Almacena el texto conservando saltos de línea
+                    descripcion: f.querySelector('.item-desc').value, 
                     precio: parseFloat(f.querySelector('.item-precio').value) || 0
                 });
             });
@@ -470,8 +468,8 @@
                 empresaEmisora: document.getElementById('empresa_emisora').value,
                 cliente: document.getElementById('cliente_doc').value.toUpperCase(),
                 rif: document.getElementById('rif_doc').value.toUpperCase() || 'N/A',
-                observaciones: document.getElementById('observaciones_documento').value, // Guarda las notas
-                logoLocal: base64LogoData, // Guarda la imagen
+                observaciones: document.getElementById('observaciones_documento').value, 
+                logoLocal: base64LogoData, 
                 items: items,
                 total: totalCalculadoUSD,
                 estado: 'PENDIENTE'
@@ -484,7 +482,6 @@
                     dataObj.numeroDocumento = listaDocumentos[index].numeroDocumento;
                     dataObj.fecha = listaDocumentos[index].fecha;
                     dataObj.estado = listaDocumentos[index].estado;
-                    // Si no se cargó un logo nuevo en la edición, preserva el que ya tenía
                     if(!dataObj.logoLocal) dataObj.logoLocal = listaDocumentos[index].logoLocal;
                     listaDocumentos[index] = dataObj;
                 }
@@ -656,7 +653,6 @@
             const d = listaDocumentos.find(doc => doc.id === id);
             if(!d) return;
 
-            // Manejo dinámico del Logo JPG / PNG
             const wrapperLogo = document.getElementById('p-logo-wrapper');
             const renderLogo = document.getElementById('p-logo-render');
             if(d.logoLocal) {
@@ -675,7 +671,6 @@
             document.getElementById('p-cliente-nombre').innerText = d.cliente;
             document.getElementById('p-cliente-rif').innerHTML = `<strong>ID / REGISTRO:</strong> ${d.rif}`;
 
-            // Manejo de Notas Comerciales en la impresión
             const bloqueObs = document.getElementById('p-bloque-observaciones-adicionales');
             const textoObs = document.getElementById('p-observaciones-texto');
             if(d.observaciones && d.observaciones.trim() !== "") {
@@ -751,7 +746,6 @@
             window.print();
         }
 
-        // Arranque de inicio
         actualizarCamposFlujo();
         agregarFilaArticulo();
         renderTablaDocs();
